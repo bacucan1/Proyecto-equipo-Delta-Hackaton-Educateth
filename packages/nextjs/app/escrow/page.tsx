@@ -1,28 +1,6 @@
-// Escrow.tsx
 "use client";
 
-// Agregar esta línea
 import React from "react";
-
-// Escrow.tsx
-
-// Escrow.tsx
-
-// Escrow.tsx
-
-// Escrow.tsx
-
-// Escrow.tsx
-
-// Escrow.tsx
-
-// Escrow.tsx
-
-// Escrow.tsx
-
-// Escrow.tsx
-
-// Escrow.tsx
 
 const Escrow: React.FC = () => {
   return (
