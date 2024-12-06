@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Define the expected shape of the response
 interface LLMResponse {
-  response: string;
+  choices: { message: { role: string; content: string } }[];
 }
 
 interface Message {
@@ -14,17 +14,34 @@ interface Message {
 const Chat: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [isWaiting, setIsWaiting] = useState<boolean>(false); // Estado para bloquear input mientras se espera respuesta
 
   const sendMessage = async () => {
-    if (!message) return;
+    if (!message || isWaiting) return; // Evita enviar mensajes si ya estás esperando
 
+    setIsWaiting(true); // Bloquea la entrada
     try {
-      // Declare the expected response type
-      const response = await axios.post<LLMResponse>("http://192.168.1.7:5000/chat", {
-        prompt: message,
-      });
+      const response = await axios.post<LLMResponse>(
+        "https://7afa-186-86-110-141.ngrok-free.app/v1/chat/completions",
+        {
+          model: "nombre_del_modelo", // Cambia a tu modelo disponible
+          messages: [
+            ...chatHistory.map((chat) => ({
+              role: chat.user === "You" ? "user" : "assistant",
+              content: chat.text,
+            })),
+            { role: "user", content: message },
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const llmResponse = response.data.response || "No response from LLM";
+      const llmResponse =
+        response.data.choices[0]?.message?.content || "No response from LLM";
 
       setChatHistory((prevHistory) => [
         ...prevHistory,
@@ -38,6 +55,8 @@ const Chat: React.FC = () => {
         ...prevHistory,
         { user: "Error", text: "Failed to get a response." },
       ]);
+    } finally {
+      setIsWaiting(false); // Libera la entrada
     }
   };
 
@@ -56,6 +75,11 @@ const Chat: React.FC = () => {
             <strong>{chat.user}:</strong> {chat.text}
           </p>
         ))}
+        {isWaiting && (
+          <p>
+            <em>Waiting for response...</em>
+          </p>
+        )}
       </div>
       <input
         type="text"
@@ -63,9 +87,16 @@ const Chat: React.FC = () => {
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Type a message"
         className="border p-2 w-full"
+        disabled={isWaiting} // Desactiva el input si se está esperando respuesta
       />
-      <button onClick={sendMessage} className="bg-blue-500 text-white p-2 mt-2">
-        Send
+      <button
+        onClick={sendMessage}
+        className={`p-2 mt-2 ${
+          isWaiting ? "bg-gray-400" : "bg-blue-500 text-white"
+        }`}
+        disabled={isWaiting} // Desactiva el botón si se está esperando respuesta
+      >
+        {isWaiting ? "Sending..." : "Send"}
       </button>
     </div>
   );
