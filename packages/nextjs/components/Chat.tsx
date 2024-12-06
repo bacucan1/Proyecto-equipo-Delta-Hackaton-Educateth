@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import ReactMarkdown from "react-markdown"; // Para renderizar Markdown
 
 // Define the expected shape of the response
 interface LLMResponse {
@@ -14,12 +15,13 @@ interface Message {
 const Chat: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
-  const [isWaiting, setIsWaiting] = useState<boolean>(false); // Estado para bloquear input mientras se espera respuesta
+  const [isWaiting, setIsWaiting] = useState<boolean>(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = async () => {
-    if (!message || isWaiting) return; // Evita enviar mensajes si ya estás esperando
+    if (!message || isWaiting) return;
 
-    setIsWaiting(true); // Bloquea la entrada
+    setIsWaiting(true);
     try {
       const response = await axios.post<LLMResponse>(
         "https://7afa-186-86-110-141.ngrok-free.app/v1/chat/completions",
@@ -56,13 +58,28 @@ const Chat: React.FC = () => {
         { user: "Error", text: "Failed to get a response." },
       ]);
     } finally {
-      setIsWaiting(false); // Libera la entrada
+      setIsWaiting(false);
     }
   };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      sendMessage();
+    }
+  };
+
+  useEffect(() => {
+    // Desplaza automáticamente el chat hacia abajo al actualizarse
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
   return (
     <div>
       <div
+        ref={chatContainerRef}
         style={{
           border: "1px solid #ccc",
           padding: "10px",
@@ -71,9 +88,10 @@ const Chat: React.FC = () => {
         }}
       >
         {chatHistory.map((chat, index) => (
-          <p key={index}>
-            <strong>{chat.user}:</strong> {chat.text}
-          </p>
+          <div key={index} style={{ marginBottom: "10px" }}>
+            <strong>{chat.user}:</strong>
+            <ReactMarkdown>{chat.text}</ReactMarkdown>
+          </div>
         ))}
         {isWaiting && (
           <p>
@@ -85,16 +103,17 @@ const Chat: React.FC = () => {
         type="text"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={handleKeyDown} // Captura la tecla Enter
         placeholder="Type a message"
         className="border p-2 w-full"
-        disabled={isWaiting} // Desactiva el input si se está esperando respuesta
+        disabled={isWaiting}
       />
       <button
         onClick={sendMessage}
         className={`p-2 mt-2 ${
           isWaiting ? "bg-gray-400" : "bg-blue-500 text-white"
         }`}
-        disabled={isWaiting} // Desactiva el botón si se está esperando respuesta
+        disabled={isWaiting}
       >
         {isWaiting ? "Sending..." : "Send"}
       </button>
