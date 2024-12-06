@@ -3,10 +3,21 @@ pragma solidity ^0.8.19;
 
 /**
  * @title Escrow Contract
- * @dev Contrato para gestionar acuerdos entre un comprador, un vendedor y, opcionalmente, un árbitro.
+ * @dev Contrato para gestionar acuerdos entre un comprador, un vendedor y un árbitro para resoluciond de disputas.
  */
-contract Escrow {
-    // Declaración de variables principales (por definir)
+contract Escrow { 
+    // Declaración de variables principales
+    enum State { CREATED, AWAITING_DELIVERY, COMPLETE, REFUNDED } // Estados posibles del pedido
+    struct Escrow {
+        address payer;       // Dirección del comprador
+        address payee;       // Dirección del vendedor
+        address arbiter;     // Dirección del árbitro
+        uint256 amount;      // Monto del acuerdo
+        uint256 deadline;    // Fecha límite para completar el acuerdo
+        State currentState;  // Estado actual del acuerdo
+    }
+    mapping(uint256 => Escrow) public escrows; // Mapeo para múltiples acuerdos
+    uint256 public escrowCount; // Contador para generar IDs únicos
 
     // Constructor para inicializar el contrato (por definir)
 
