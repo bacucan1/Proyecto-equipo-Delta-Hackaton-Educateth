@@ -18,12 +18,17 @@ contract Escrow {
         address payee;
         uint256 amount;
         uint256 deadline;
+        uint256 safeDeliveryTime;
         State currentState;
     }
 
     mapping(uint256 => Escrow) public escrows; // Almacena los pedidos por ID
+
     uint256 public escrowCount; // Contador para IDs únicos
     address public globalArbiter; // Árbitro global temporal
+    uint256 public safeTime; // Tiempo seguro definido globalmente
+
+    uint256 public constant SAFE_TIME = 24 * 60 * 60; // Tiempo seguro de 24 horas en segundos
 
     // Constructor
     constructor() {
@@ -38,9 +43,6 @@ contract Escrow {
     event DisputeInitiated(uint256 indexed escrowId, address indexed initiator);
     event DeadlineExtended(uint256 indexed escrowId, uint256 newDeadline);
     event DisputeResolved(uint256 indexed escrowId, address indexed resolver, uint8 action);
-
-
-
 
     // Modificadores
     modifier onlyArbiter() {
@@ -75,6 +77,7 @@ contract Escrow {
             payee: _payee,
             amount: msg.value,
             deadline: _deadline,
+            safeDeliveryTime: _deadline + SAFE_TIME,
             currentState: State.AWAITING_DELIVERY
         });
 
@@ -155,6 +158,31 @@ contract Escrow {
 
     // Manejar plazos vencidos
     function handleDeadline(uint256 escrowId) external {
-        // Por implementar
+    Escrow storage escrow = escrows[escrowId];
+
+    // Caso 1: El comprador ya recibió el producto antes del `deadline`
+    if (block.timestamp <= escrow.deadline && escrow.currentState == State.DELIVERED) {
+        _releaseFunds(escrowId); // Liberar los fondos al vendedor
+        return;
     }
+
+    // Caso 2: El producto fue enviado, pero el `safeTime` expiró sin disputa
+    if (block.timestamp > escrow.deadline && escrow.currentState == State.DELIVERED) {
+        if (block.timestamp > escrow.safeDeliveryTime) {
+            _releaseFunds(escrowId); // Liberar fondos al vendedor
+        } else {
+            revert("Aún en periodo para que el comprador inicie una disputa.");
+        }
+        return;
+    }
+
+    // Caso 3: El producto no fue enviado antes del `deadline`
+    if (block.timestamp > escrow.deadline && escrow.currentState == State.AWAITING_DELIVERY) {
+        _refund(escrowId); // Reembolsar fondos al comprador
+        return;
+    }
+
+    revert("El pedido está en un estado no manejable por esta función.");
+    }
+
 }
