@@ -25,7 +25,7 @@ export const Footer = () => {
             </div>
           )}
           <Link
-            href="https://etherscan.io/"
+            href="https://sepolia.arbiscan.io/address/0x9d29727e3ea804629217b49d9dba49f1ea1f1dab"
             target="_blank"
             rel="noreferrer"
             className="btn btn-secondary btn-sm font-normal gap-2 flex items-center"
@@ -50,7 +50,7 @@ export const Footer = () => {
         <div className="flex items-center gap-4 sm:gap-6">
           <SwitchTheme className="text-gray-700 dark:text-gray-300" aria-label="Switch theme" />
           <Link
-            href="https://buidlguidl.com/"
+            href="https://devpost.com/software/smartassist-8mjku6"
             target="_blank"
             rel="noreferrer"
             className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -79,7 +79,7 @@ export const Footer = () => {
               </div>
             )}
             <Link
-              href="https://etherscan.io/"
+              href="https://sepolia.arbiscan.io/address/0x9d29727e3ea804629217b49d9dba49f1ea1f1dab"
               target="_blank"
               rel="noreferrer"
               className="btn btn-secondary btn-sm font-normal gap-2 flex items-center"
@@ -98,7 +98,7 @@ export const Footer = () => {
             </Link>
             <SwitchTheme className="text-gray-700 dark:text-gray-300" aria-label="Switch theme" />
             <Link
-              href="https://buidlguidl.com/"
+              href="https://devpost.com/software/smartassist-8mjku6"
               target="_blank"
               rel="noreferrer"
               className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300"
