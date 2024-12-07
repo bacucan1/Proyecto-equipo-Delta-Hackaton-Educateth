@@ -31,6 +31,7 @@ contract Escrow {
     // Eventos
     event EscrowCreated(uint256 indexed escrowId, address indexed payer, address indexed payee, uint256 amount, uint256 deadline);
     event FundsReleased(uint256 indexed escrowId, address indexed payee, uint256 amount);
+    event FundsRefunded(uint256 indexed escrowId, address indexed payer, uint256 amount);
 
     // Crear y fondear un nuevo pedido de escrow
     function createAndDeposit(address _payee, uint256 _deadline) external payable returns (uint256) {
@@ -63,21 +64,25 @@ contract Escrow {
     // Libera los fondos al vendedor
     function _releaseFunds(uint256 escrowId) internal {
     Escrow storage escrow = escrows[escrowId];
-    require(escrow.currentState == State.AWAITING_DELIVERY, "El pedido no está en estado AWAITING_DELIVERY.");
+    require(escrow.currentState == State.DELIVERED, "El pedido no se ha enviado.");
+    
+    escrow.currentState = State.COMPLETE; // Actualiza el estado a COMPLETE  
+    
+    payable(escrow.payee).transfer(escrow.amount); // Transfiere los fondos al vendedor
 
-    // Actualiza el estado a COMPLETE
-    escrow.currentState = State.COMPLETE;
-
-    // Transfiere los fondos al vendedor
-    payable(escrow.payee).transfer(escrow.amount);
-
-    // Emite un evento para registrar la acción
-    emit FundsReleased(escrowId, escrow.payee, escrow.amount);
+    emit FundsReleased(escrowId, escrow.payee, escrow.amount);   // Emite un evento para registrar la acción
     }
 
     // Reembolsar los fondos al comprador
-    function refund(uint256 escrowId) external {
-        // Por implementar
+    function _refund(uint256 escrowId) internal {
+    Escrow storage escrow = escrows[escrowId];
+    require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "El pedido no está en un estado reembolsable.");
+
+    escrow.currentState = State.REFUNDED; // Actualiza el estado a REFUNDED
+
+    payable(escrow.payer).transfer(escrow.amount);  // Transfiere los fondos al comprador
+
+    emit FundsRefunded(escrowId, escrow.payer, escrow.amount); // Emite un evento para registrar la acción
     }
 
     // Manejar plazos vencidos
