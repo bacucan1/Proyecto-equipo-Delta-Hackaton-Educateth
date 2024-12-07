@@ -3,55 +3,71 @@ pragma solidity ^0.8.0;
 
 /**
  * @title Escrow Contract
- * @dev Contrato para gestionar acuerdos entre un comprador, un vendedor y un árbitro para resolución de disputas.
- *      Nota: Actualmente, el árbitro es global y se define al desplegar el contrato. Esto es temporal y se puede
- *      mejorar para manejar árbitros dinámicos o específicos por pedido para una mejor escalabilidad.
+ * @dev Gestión de acuerdos entre comprador, vendedor y árbitro.
+ *      Nota: Árbitro global definido temporalmente; mejorar para escalabilidad futura.
  */
 contract Escrow { 
-    // Declaración de variables principales
-    enum State { CREATED, AWAITING_DELIVERY, COMPLETE, REFUNDED } // Estados posibles del pedido
+    // Estados posibles del pedido
+    enum State { CREATED, AWAITING_DELIVERY, COMPLETE, REFUNDED }
+
+    // Estructura de cada pedido de escrow
     struct Escrow {
-        address payer;       // Dirección del comprador
-        address payee;       // Dirección del vendedor
-        uint256 amount;      // Monto del acuerdo
-        uint256 deadline;    // Fecha límite para completar el acuerdo
-        State currentState;  // Estado actual del acuerdo
+        address payer;
+        address payee;
+        uint256 amount;
+        uint256 deadline;
+        State currentState;
     }
-    mapping(uint256 => Escrow) public escrows; // Mapeo para múltiples acuerdos
-    uint256 public escrowCount; // Contador para generar IDs únicos
 
-    // Árbitro global (definido en el constructor)
-    address public globalArbiter;
+    mapping(uint256 => Escrow) public escrows; // Almacena los pedidos por ID
+    uint256 public escrowCount; // Contador para IDs únicos
+    address public globalArbiter; // Árbitro global temporal
 
-    // Constructor para inicializar el árbitro global
+    // Constructor
     constructor() {
-        // Dirección temporal del árbitro global
         globalArbiter = 0x556ffE28AF4661257F299a9a38e81cD937Adbe3f;
-        // Nota: Este enfoque puede mejorarse para manejar árbitros dinámicos o múltiples árbitros en el futuro.
     }
 
-    // 1. Crear un nuevo pedido de escrow
-    function createEscrow(address _payee, uint256 _amount, uint256 _deadline) external returns (uint256) {
-        // Lógica pendiente
+    // Eventos
+    event EscrowCreated(
+        uint256 indexed escrowId,
+        address indexed payer,
+        address indexed payee,
+        uint256 amount,
+        uint256 deadline
+    );
+
+    // Crear y fondear un nuevo pedido de escrow
+    function createAndDeposit(address _payee, uint256 _deadline) external payable returns (uint256) {
+        require(msg.value > 0, "El monto debe ser mayor a cero.");
+        require(block.timestamp < _deadline, "Fecha límite inválida.");
+        require(_payee != address(0), "Dirección del vendedor inválida.");
+
+        escrowCount++;
+        escrows[escrowCount] = Escrow({
+            payer: msg.sender,
+            payee: _payee,
+            amount: msg.value,
+            deadline: _deadline,
+            currentState: State.AWAITING_DELIVERY
+        });
+
+        emit EscrowCreated(escrowCount, msg.sender, _payee, msg.value, _deadline);
+        return escrowCount;
     }
 
-    // 2. Fondear el contrato (depositar los fondos necesarios por el comprador)
-    function deposit(uint256 escrowId) external payable {
-        // Lógica pendiente
-    }
-
-    // 3. Liberar los fondos al vendedor
+    // Liberar los fondos al vendedor
     function releaseFunds(uint256 escrowId) external {
-        // Lógica pendiente
+        // Por implementar
     }
 
-    // 4. Reembolsar los fondos al comprador
+    // Reembolsar los fondos al comprador
     function refund(uint256 escrowId) external {
-        // Lógica pendiente
+        // Por implementar
     }
 
-    // 5. Manejar plazos vencidos
+    // Manejar plazos vencidos
     function handleDeadline(uint256 escrowId) external {
-        // Lógica pendiente
+        // Por implementar
     }
 }
