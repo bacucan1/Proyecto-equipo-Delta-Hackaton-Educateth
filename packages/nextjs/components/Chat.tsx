@@ -130,9 +130,11 @@ const Chat: React.FC = () => {
         >
           Clear
         </button>
+      </div>
+      <div className="mt-4">
         <button
           onClick={() => (window.location.href = "/escrow")}
-          className="px-4 py-2 rounded-lg shadow-sm bg-green-500 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-300"
+          className="w-full px-8 py-4 rounded-lg shadow-sm bg-green-500 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-300"
         >
           Escrow
         </button>
