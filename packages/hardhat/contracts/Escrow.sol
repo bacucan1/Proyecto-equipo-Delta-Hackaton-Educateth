@@ -29,13 +29,8 @@ contract Escrow {
     }
 
     // Eventos
-    event EscrowCreated(
-        uint256 indexed escrowId,
-        address indexed payer,
-        address indexed payee,
-        uint256 amount,
-        uint256 deadline
-    );
+    event EscrowCreated(uint256 indexed escrowId, address indexed payer, address indexed payee, uint256 amount, uint256 deadline);
+    event FundsReleased(uint256 indexed escrowId, address indexed payee, uint256 amount);
 
     // Crear y fondear un nuevo pedido de escrow
     function createAndDeposit(address _payee, uint256 _deadline) external payable returns (uint256) {
@@ -65,10 +60,19 @@ contract Escrow {
     escrow.currentState = State.DELIVERED;
     }
 
+    // Libera los fondos al vendedor
+    function _releaseFunds(uint256 escrowId) internal {
+    Escrow storage escrow = escrows[escrowId];
+    require(escrow.currentState == State.AWAITING_DELIVERY, "El pedido no está en estado AWAITING_DELIVERY.");
 
-    // Liberar los fondos al vendedor
-    function releaseFunds(uint256 escrowId) external {
-        // Por implementar
+    // Actualiza el estado a COMPLETE
+    escrow.currentState = State.COMPLETE;
+
+    // Transfiere los fondos al vendedor
+    payable(escrow.payee).transfer(escrow.amount);
+
+    // Emite un evento para registrar la acción
+    emit FundsReleased(escrowId, escrow.payee, escrow.amount);
     }
 
     // Reembolsar los fondos al comprador
