@@ -11,11 +11,7 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
   const isDarkMode = resolvedTheme === "dark";
 
   const handleToggle = () => {
-    if (isDarkMode) {
-      setTheme("light");
-      return;
-    }
-    setTheme("dark");
+    setTheme(isDarkMode ? "light" : "dark");
   };
 
   useEffect(() => {
@@ -25,17 +21,21 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
   if (!mounted) return null;
 
   return (
-    <div className={`flex space-x-2 h-8 items-center justify-center text-sm ${className}`}>
-      <input
-        id="theme-toggle"
-        type="checkbox"
-        className="toggle toggle-primary bg-primary hover:bg-primary border-primary"
-        onChange={handleToggle}
-        checked={isDarkMode}
-      />
-      <label htmlFor="theme-toggle" className={`swap swap-rotate ${!isDarkMode ? "swap-active" : ""}`}>
-        <SunIcon className="swap-on h-5 w-5" />
-        <MoonIcon className="swap-off h-5 w-5" />
+    <div className={`flex items-center justify-center ${className}`}>
+      <input id="theme-toggle" type="checkbox" className="hidden" onChange={handleToggle} checked={isDarkMode} />
+      <label htmlFor="theme-toggle" className="flex items-center cursor-pointer">
+        <div className="relative">
+          <SunIcon
+            className={`h-6 w-6 transition-transform duration-500 ${
+              isDarkMode ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
+            }`}
+          />
+          <MoonIcon
+            className={`h-6 w-6 absolute top-0 left-0 transition-transform duration-500 ${
+              isDarkMode ? "rotate-0 opacity-100" : "rotate-90 opacity-0"
+            }`}
+          />
+        </div>
       </label>
     </div>
   );

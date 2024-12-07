@@ -2,10 +2,8 @@ import React from "react";
 import Link from "next/link";
 import { hardhat } from "viem/chains";
 import { CurrencyDollarIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { HeartIcon } from "@heroicons/react/24/outline";
+import { DocumentArrowUpIcon } from "@heroicons/react/24/solid";
 import { SwitchTheme } from "~~/components/SwitchTheme";
-import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
-import { Faucet } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useGlobalState } from "~~/services/store/store";
 
@@ -15,66 +13,51 @@ import { useGlobalState } from "~~/services/store/store";
 export const Footer = () => {
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
   const { targetNetwork } = useTargetNetwork();
-  const isLocalNetwork = targetNetwork.id === hardhat.id;
 
   return (
-    <div className="min-h-0 py-5 px-1 mb-11 lg:mb-0">
-      <div>
-        <div className="fixed flex justify-between items-center w-full z-10 p-4 bottom-0 left-0 pointer-events-none">
-          <div className="flex flex-col md:flex-row gap-2 pointer-events-auto">
-            {nativeCurrencyPrice > 0 && (
-              <div>
-                <div className="btn btn-primary btn-sm font-normal gap-1 cursor-auto">
-                  <CurrencyDollarIcon className="h-4 w-4" />
-                  <span>{nativeCurrencyPrice.toFixed(2)}</span>
-                </div>
-              </div>
-            )}
-            {isLocalNetwork && (
-              <>
-                <Faucet />
-                <Link href="/blockexplorer" passHref className="btn btn-primary btn-sm font-normal gap-1">
-                  <MagnifyingGlassIcon className="h-4 w-4" />
-                  <span>Block Explorer</span>
-                </Link>
-              </>
-            )}
-          </div>
-          <SwitchTheme className={`pointer-events-auto ${isLocalNetwork ? "self-end md:self-auto" : ""}`} />
+    <footer className="fixed bottom-0 left-0 w-full bg-transparent z-10">
+      <div className="flex flex-col md:flex-row justify-between items-center py-4 px-6">
+        {/* Left Section */}
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          {nativeCurrencyPrice > 0 && (
+            <div className="flex items-center gap-2">
+              <CurrencyDollarIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              <span className="text-gray-700 dark:text-gray-200 font-medium">{nativeCurrencyPrice.toFixed(3)} $</span>
+            </div>
+          )}
+          <Link
+            href="https://etherscan.io/"
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-secondary btn-sm font-normal gap-2 flex items-center"
+          >
+            <MagnifyingGlassIcon className="h-5 w-5" />
+            <span>View on Arbiscan</span>
+          </Link>
+          <Link
+            href="https://github.com/bacucan1/Proyecto-equipo-Delta-Hackaton-Educateth"
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-secondary btn-sm font-normal gap-2 flex items-center"
+          >
+            <DocumentArrowUpIcon className="h-6 w-6 text-gray-500" />
+            <span>Github</span>
+          </Link>
+        </div>
+
+        {/* Center Section */}
+        <div className="flex items-center">
+          <SwitchTheme className="mr-4" aria-label="Switch theme" />
+          <Link
+            href="https://buidlguidl.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm font-medium text-gray-700 dark:text-gray-200"
+          >
+            Powered by <span className="font-bold">Team Delta</span>
+          </Link>
         </div>
       </div>
-      <div className="w-full">
-        <ul className="menu menu-horizontal w-full">
-          <div className="flex justify-center items-center gap-2 text-sm w-full">
-            <div className="text-center">
-              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
-                Fork me
-              </a>
-            </div>
-            <span>·</span>
-            <div className="flex justify-center items-center gap-2">
-              <p className="m-0 text-center">
-                Built with <HeartIcon className="inline-block h-4 w-4" /> at
-              </p>
-              <a
-                className="flex justify-center items-center gap-1"
-                href="https://buidlguidl.com/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <BuidlGuidlLogo className="w-3 h-5 pb-1" />
-                <span className="link">BuidlGuidl</span>
-              </a>
-            </div>
-            <span>·</span>
-            <div className="text-center">
-              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
-                Support
-              </a>
-            </div>
-          </div>
-        </ul>
-      </div>
-    </div>
+    </footer>
   );
 };
