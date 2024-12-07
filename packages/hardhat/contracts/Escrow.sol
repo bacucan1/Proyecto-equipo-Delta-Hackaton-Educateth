@@ -158,6 +158,9 @@ contract Escrowdelta {
     function handleDeadline(uint256 escrowId) external {
     Escrow storage escrow = escrows[escrowId];
 
+    // Asegurarse de que el pedido no esté en disputa
+    require(escrow.currentState != State.IN_DISPUTE, "El pedido está en disputa y no puede manejar plazos.");
+
     // Caso 1: El comprador ya recibió el producto antes del `deadline`
     if (block.timestamp <= escrow.deadline && escrow.currentState == State.DELIVERED) {
         _releaseFunds(escrowId); // Liberar los fondos al vendedor
