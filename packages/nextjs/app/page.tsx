@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import type { NextPage } from "next";
+import { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { ChatBubbleLeftRightIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
-import { SwitchTheme } from "~~/components/SwitchTheme";
 import { Address } from "~~/components/scaffold-eth";
 
 const Home: NextPage = () => {
@@ -49,31 +48,31 @@ const Home: NextPage = () => {
       </div>
 
       <section className="bg-blue-50 dark:bg-gray-800 mt-16 px-8 py-12 w-full">
-        <div className="max-w-3xl bg-white dark:bg-gray-700 mx-auto rounded-3xl p-10 shadow-lg">
+        <div className="max-w-6xl mx-auto p-10 bg-white dark:bg-gray-700 rounded-3xl shadow-lg">
           <h2 className="text-3xl font-bold text-center text-blue-700 dark:text-blue-300 mb-6">
             Why Choose SmartAsist?
           </h2>
-          <ul className="list-none space-y-6">
-            <li className="flex items-start space-x-3">
-              <span className="text-blue-600 dark:text-blue-400 text-xl">🔍</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center text-center">
+              <span className="text-blue-600 dark:text-blue-400 text-4xl mb-4">🔍</span>
               <p className="text-lg text-gray-700 dark:text-gray-300">
                 <strong>Find Quality Products:</strong> Get AI-curated recommendations for high-quality purchases.
               </p>
-            </li>
-            <li className="flex items-start space-x-3">
-              <span className="text-green-600 dark:text-green-400 text-xl">🔒</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="text-green-600 dark:text-green-400 text-4xl mb-4">🔒</span>
               <p className="text-lg text-gray-700 dark:text-gray-300">
                 <strong>Secure Transactions:</strong> Every purchase is protected through our escrow system.
               </p>
-            </li>
-            <li className="flex items-start space-x-3">
-              <span className="text-purple-600 dark:text-purple-400 text-xl">💬</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="text-purple-600 dark:text-purple-400 text-4xl mb-4">💬</span>
               <p className="text-lg text-gray-700 dark:text-gray-300">
                 <strong>Easy Interaction:</strong> Chat with the assistant anytime to explore deals and secure
                 transactions.
               </p>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </section>
     </div>
