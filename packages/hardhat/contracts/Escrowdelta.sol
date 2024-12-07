@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
  */
 contract Escrowdelta { 
     // Estados posibles del pedido
-    enum State { AWAITING_DELIVERY, DELIVERED, COMPLETE, REFUNDED, IN_DISPUTE }
+    enum State { AWAITING_DELIVERY, DELIVERED, COMPLETE, REFUNDED }
     // Resoluciones posibles de las disputas
     enum DisputeAction { RELEASE_FUNDS, REFUND, EXTEND_DEADLINE }
 
@@ -20,6 +20,7 @@ contract Escrowdelta {
         uint256 deadline;
         uint256 safeDeliveryTime;
         State currentState;
+        bool inDispute;
     }
 
     mapping(uint256 => Escrow) public escrows; // Almacena los pedidos por ID
@@ -76,7 +77,8 @@ contract Escrowdelta {
             amount: msg.value,
             deadline: _deadline,
             safeDeliveryTime: _deadline + SAFE_TIME,
-            currentState: State.AWAITING_DELIVERY
+            currentState: State.AWAITING_DELIVERY,
+            inDispute: false
         });
 
         emit EscrowCreated(escrowCount, msg.sender, _payee, msg.value, _deadline);
@@ -115,7 +117,7 @@ contract Escrowdelta {
     Escrow storage escrow = escrows[escrowId];
     require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "Estado no apto para iniciar disputa.");
     require(block.timestamp > escrow.deadline,"No se puede iniciar disputa mientras el plazo este en curso.");
-    escrow.currentState = State.IN_DISPUTE; // Cambia el estado a IN_DISPUTE
+    escrow.inDispute = true; // Activa la disputa
     emit DisputeInitiated(escrowId, msg.sender);  // Emite un evento para registrar la disputa
     }
 
@@ -133,7 +135,7 @@ contract Escrowdelta {
 
     function resolveDispute(uint256 escrowId, DisputeAction action, uint256 newDeadline) external onlyArbiter {
     Escrow storage escrow = escrows[escrowId];
-    require(escrow.currentState == State.IN_DISPUTE, "No hay una disputa activa para este pedido.");
+    require(escrow.inDispute, "No hay una disputa activa para este pedido.");
 
     if (action == DisputeAction.RELEASE_FUNDS) {
         require(escrow.currentState == State.DELIVERED, "No se Puede Liberar fondos, No se Envio el Producto");
@@ -155,7 +157,7 @@ contract Escrowdelta {
     Escrow storage escrow = escrows[escrowId];
 
     // Asegurarse de que el pedido no esté en disputa
-    require(escrow.currentState != State.IN_DISPUTE, "El pedido esta en disputa y no puede manejar plazos.");
+    require(!escrow.inDispute, "El pedido esta en disputa y no puede manejar plazos.");
 
     // Caso 1: El comprador ya recibió el producto antes del `deadline`
     if (block.timestamp <= escrow.deadline && escrow.currentState == State.DELIVERED && msg.sender == escrow.payer) {
@@ -179,7 +181,7 @@ contract Escrowdelta {
         return;
     }
 
-    revert("El pedido esta en un estado no manejable por esta funcion.");
+    revert("El pedido ya fue procesado, No se puede ejecutar esta funcion");
     }
 
 }
