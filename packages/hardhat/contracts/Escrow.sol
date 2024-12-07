@@ -94,11 +94,8 @@ contract Escrowdelta {
 
     // Libera los fondos al vendedor
     function _releaseFunds(uint256 escrowId) internal {
-    Escrow storage escrow = escrows[escrowId];
-    require(escrow.currentState == State.DELIVERED, "El pedido no se ha enviado.");
-    
+    Escrow storage escrow = escrows[escrowId];  
     escrow.currentState = State.COMPLETE; // Actualiza el estado a COMPLETE  
-    
     payable(escrow.payee).transfer(escrow.amount); // Transfiere los fondos al vendedor
 
     emit FundsReleased(escrowId, escrow.payee, escrow.amount);   // Emite un evento para registrar la acción
@@ -107,10 +104,7 @@ contract Escrowdelta {
     // Reembolsar los fondos al comprador
     function _refund(uint256 escrowId) internal {
     Escrow storage escrow = escrows[escrowId];
-    require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "El pedido no esta en un estado reembolsable.");
-
     escrow.currentState = State.REFUNDED; // Actualiza el estado a REFUNDED
-
     payable(escrow.payer).transfer(escrow.amount);  // Transfiere los fondos al comprador
 
     emit FundsRefunded(escrowId, escrow.payer, escrow.amount); // Emite un evento para registrar la acción
@@ -142,8 +136,10 @@ contract Escrowdelta {
     require(escrow.currentState == State.IN_DISPUTE, "No hay una disputa activa para este pedido.");
 
     if (action == DisputeAction.RELEASE_FUNDS) {
+        require(escrow.currentState == State.DELIVERED, "No se Puede Liberar fondos, No se Envio el Producto");
         _releaseFunds(escrowId); //Libera fondos al Vendedor
     } else if (action == DisputeAction.REFUND) {
+        require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "No se Puede Reembolsar, Estado no permitido");
         _refund(escrowId); //Reembolsa fondos al Comprador
     } else if (action == DisputeAction.EXTEND_DEADLINE) {
         extendDeadline(escrowId, newDeadline); //Extiende el periodo de tiempo
@@ -155,14 +151,14 @@ contract Escrowdelta {
 
 
     // Manejar plazos vencidos
-    function handleDeadline(uint256 escrowId) external {
+    function handleDeadline(uint256 escrowId) external onlyParticipants(escrowId) {
     Escrow storage escrow = escrows[escrowId];
 
     // Asegurarse de que el pedido no esté en disputa
-    require(escrow.currentState != State.IN_DISPUTE, "El pedido está en disputa y no puede manejar plazos.");
+    require(escrow.currentState != State.IN_DISPUTE, "El pedido esta en disputa y no puede manejar plazos.");
 
     // Caso 1: El comprador ya recibió el producto antes del `deadline`
-    if (block.timestamp <= escrow.deadline && escrow.currentState == State.DELIVERED) {
+    if (block.timestamp <= escrow.deadline && escrow.currentState == State.DELIVERED && msg.sender == escrow.payer) {
         _releaseFunds(escrowId); // Liberar los fondos al vendedor
         return;
     }
