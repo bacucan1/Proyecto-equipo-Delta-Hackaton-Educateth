@@ -26,8 +26,6 @@ contract Escrowdelta {
 
     uint256 public escrowCount; // Contador para IDs únicos
     address public globalArbiter; // Árbitro global temporal
-    uint256 public safeTime; // Tiempo seguro definido globalmente
-
     uint256 public constant SAFE_TIME = 24 * 60 * 60; // Tiempo seguro de 24 horas en segundos
 
     // Constructor
@@ -122,7 +120,7 @@ contract Escrowdelta {
     function initiateDispute(uint256 escrowId) external onlyParticipants(escrowId) {
     Escrow storage escrow = escrows[escrowId];
     require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "Estado no apto para iniciar disputa.");
-
+    require(block.timestamp > escrow.deadline,"No se puede iniciar disputa mientras el plazo este en curso.");
     escrow.currentState = State.IN_DISPUTE; // Cambia el estado a IN_DISPUTE
     emit DisputeInitiated(escrowId, msg.sender);  // Emite un evento para registrar la disputa
     }
