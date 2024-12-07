@@ -13,7 +13,7 @@ const Home: NextPage = () => {
     <div className="flex flex-col items-center flex-grow min-h-screen bg-gradient-to-b from-blue-100 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <header className="px-5 py-10 text-center">
         <h1 className="text-5xl font-extrabold tracking-tight mb-4 text-blue-700 dark:text-blue-300">
-          Welcome to <span className="text-blue-900 dark:text-blue-500">SmartAsist</span>
+          Welcome to <span className="text-blue-900 dark:text-blue-500">SmartAssist</span>
         </h1>
         <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
           Discover the best online deals with our AI-powered assistant, ensuring secure purchases through a reliable
