@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
-// Para renderizar Markdown
-
 // Define the expected shape of the response
 interface LLMResponse {
   choices: { message: { role: string; content: string } }[];
@@ -20,13 +18,26 @@ const Chat: React.FC = () => {
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // Load chat history from localStorage when the component mounts
+  useEffect(() => {
+    const storedHistory = localStorage.getItem("chatHistory");
+    if (storedHistory) {
+      setChatHistory(JSON.parse(storedHistory));
+    }
+  }, []);
+
+  // Save chat history to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+  }, [chatHistory]);
+
   const sendMessage = async () => {
     if (!message || isWaiting) return;
 
     setIsWaiting(true);
     try {
       const response = await axios.post<LLMResponse>(
-        "https://7afa-186-86-110-141.ngrok-free.app/v1/chat/completions",
+        "https://6092-186-86-110-141.ngrok-free.app/v1/chat/completions",
         {
           model: "nombre_del_modelo", // Cambia a tu modelo disponible
           messages: [
@@ -65,6 +76,11 @@ const Chat: React.FC = () => {
       event.preventDefault();
       sendMessage();
     }
+  };
+
+  const clearHistory = () => {
+    setChatHistory([]);
+    localStorage.removeItem("chatHistory");
   };
 
   useEffect(() => {
@@ -113,6 +129,9 @@ const Chat: React.FC = () => {
           disabled={isWaiting}
         >
           {isWaiting ? "Sending..." : "Send"}
+        </button>
+        <button onClick={clearHistory} className="p-2 bg-red-500 text-white">
+          Clear History
         </button>
         <button
           onClick={() => (window.location.href = "/escrow")} // Redirección a Escrow
