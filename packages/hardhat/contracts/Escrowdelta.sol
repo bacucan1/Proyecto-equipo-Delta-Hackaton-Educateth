@@ -144,6 +144,7 @@ contract Escrowdelta {
         require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "No se Puede Reembolsar, Estado no permitido");
         _refund(escrowId); //Reembolsa fondos al Comprador
     } else if (action == DisputeAction.EXTEND_DEADLINE) {
+        escrow.inDispute = false;
         extendDeadline(escrowId, newDeadline); //Extiende el periodo de tiempo
     } else {
         revert("Accion invalida para resolver la disputa.");
@@ -160,10 +161,12 @@ contract Escrowdelta {
     require(!escrow.inDispute, "El pedido esta en disputa y no puede manejar plazos.");
 
     // Caso 1: El comprador ya recibió el producto antes del `deadline`
-    if (block.timestamp <= escrow.deadline && escrow.currentState == State.DELIVERED && msg.sender == escrow.payer) {
-        _releaseFunds(escrowId); // Liberar los fondos al vendedor
-        return;
+    if (block.timestamp <= escrow.deadline && escrow.currentState == State.DELIVERED) {
+    require(msg.sender == escrow.payer, "Solo el comprador puede liberar los fondos antes del deadline.");
+    _releaseFunds(escrowId);
+    return;
     }
+
 
     // Caso 2: El producto fue enviado, pero el `safeTime` expiró sin disputa
     if (block.timestamp > escrow.deadline && escrow.currentState == State.DELIVERED) {
@@ -181,7 +184,7 @@ contract Escrowdelta {
         return;
     }
 
-    revert("El pedido ya fue procesado, No se puede ejecutar esta funcion");
+    revert("Actualmente no puede ejecutar esta operacion, verifique el estatus de su pedido");
     }
 
 }
