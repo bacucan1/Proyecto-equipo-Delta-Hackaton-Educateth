@@ -9,6 +9,8 @@ pragma solidity ^0.8.0;
 contract Escrow { 
     // Estados posibles del pedido
     enum State { AWAITING_DELIVERY, DELIVERED, COMPLETE, REFUNDED, IN_DISPUTE }
+    // Resoluciones posibles de las disputas
+    enum DisputeAction { RELEASE_FUNDS, REFUND, EXTEND_DEADLINE }
 
     // Estructura de cada pedido de escrow
     struct Escrow {
@@ -35,6 +37,8 @@ contract Escrow {
     event FundsRefunded(uint256 indexed escrowId, address indexed payer, uint256 amount);
     event DisputeInitiated(uint256 indexed escrowId, address indexed initiator);
     event DeadlineExtended(uint256 indexed escrowId, uint256 newDeadline);
+    event DisputeResolved(uint256 indexed escrowId, address indexed resolver, uint8 action);
+
 
 
 
@@ -129,6 +133,25 @@ contract Escrow {
     escrow.deadline = newDeadline;     // Actualiza el plazo
     emit DeadlineExtended(escrowId, newDeadline);  // Emite un evento para registrar la extensión del plazo
     }
+
+    //Resolucion de disputas por el arbitro
+
+    function resolveDispute(uint256 escrowId, DisputeAction action, uint256 newDeadline) external onlyArbiter {
+    Escrow storage escrow = escrows[escrowId];
+    require(escrow.currentState == State.IN_DISPUTE, "No hay una disputa activa para este pedido.");
+
+    if (action == DisputeAction.RELEASE_FUNDS) {
+        _releaseFunds(escrowId); //Libera fondos al Vendedor
+    } else if (action == DisputeAction.REFUND) {
+        _refund(escrowId); //Reembolsa fondos al Comprador
+    } else if (action == DisputeAction.EXTEND_DEADLINE) {
+        _extendDeadline(escrowId, newDeadline); //Extiende el periodo de tiempo
+    } else {
+        revert("Acción inválida para resolver la disputa.");
+    }
+    emit DisputeResolved(escrowId, msg.sender, uint8(action));
+    }
+
 
     // Manejar plazos vencidos
     function handleDeadline(uint256 escrowId) external {
