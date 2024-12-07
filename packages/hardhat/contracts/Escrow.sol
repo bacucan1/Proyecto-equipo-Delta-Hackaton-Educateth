@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
  * @dev Gestión de acuerdos entre comprador, vendedor y árbitro.
  *      Nota: Árbitro global definido temporalmente; mejorar para escalabilidad futura.
  */
-contract Escrow { 
+contract Escrowdelta { 
     // Estados posibles del pedido
     enum State { AWAITING_DELIVERY, DELIVERED, COMPLETE, REFUNDED, IN_DISPUTE }
     // Resoluciones posibles de las disputas
@@ -46,20 +46,20 @@ contract Escrow {
 
     // Modificadores
     modifier onlyArbiter() {
-    require(msg.sender == globalArbiter, "Solo el árbitro puede realizar esta acción.");
+    require(msg.sender == globalArbiter, "Solo el arbitro puede realizar esta accion.");
     _;
     }
 
     modifier onlyParticipants(uint256 escrowId) {
     Escrow storage escrow = escrows[escrowId];
-    require(msg.sender == escrow.payer || msg.sender == escrow.payee,"Solo el comprador o el vendedor pueden ejecutar esta acción."
+    require(msg.sender == escrow.payer || msg.sender == escrow.payee,"Solo el comprador o el vendedor pueden ejecutar esta accion."
     );
     _;
     }
 
     modifier onlyPayee(uint256 escrowId) {
     Escrow storage escrow = escrows[escrowId];
-    require(msg.sender == escrow.payee, "Solo el vendedor puede ejecutar esta acción.");
+    require(msg.sender == escrow.payee, "Solo el vendedor puede ejecutar esta accion.");
     _;
     }
 
@@ -68,8 +68,8 @@ contract Escrow {
     // Crear y fondear un nuevo pedido de escrow
     function createAndDeposit(address _payee, uint256 _deadline) external payable returns (uint256) {
         require(msg.value > 0, "El monto debe ser mayor a cero.");
-        require(block.timestamp < _deadline, "Fecha límite inválida.");
-        require(_payee != address(0), "Dirección del vendedor inválida.");
+        require(block.timestamp < _deadline, "Fecha limite invalida.");
+        require(_payee != address(0), "Direccion del vendedor invalida.");
 
         escrowCount++;
         escrows[escrowCount] = Escrow({
@@ -109,7 +109,7 @@ contract Escrow {
     // Reembolsar los fondos al comprador
     function _refund(uint256 escrowId) internal {
     Escrow storage escrow = escrows[escrowId];
-    require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "El pedido no está en un estado reembolsable.");
+    require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "El pedido no esta en un estado reembolsable.");
 
     escrow.currentState = State.REFUNDED; // Actualiza el estado a REFUNDED
 
@@ -128,7 +128,7 @@ contract Escrow {
     }
 
     // Extensión del periodo de tiempo de la transacción
-    function extendDeadline(uint256 escrowId, uint256 newDeadline) external onlyArbiter {
+    function extendDeadline(uint256 escrowId, uint256 newDeadline) internal onlyArbiter {
     Escrow storage escrow = escrows[escrowId];
     require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "Estado no apto para extender el plazo.");
     require(newDeadline > escrow.deadline, "La nueva fecha debe ser mayor al plazo actual.");
@@ -148,9 +148,9 @@ contract Escrow {
     } else if (action == DisputeAction.REFUND) {
         _refund(escrowId); //Reembolsa fondos al Comprador
     } else if (action == DisputeAction.EXTEND_DEADLINE) {
-        _extendDeadline(escrowId, newDeadline); //Extiende el periodo de tiempo
+        extendDeadline(escrowId, newDeadline); //Extiende el periodo de tiempo
     } else {
-        revert("Acción inválida para resolver la disputa.");
+        revert("Accion invalida para resolver la disputa.");
     }
     emit DisputeResolved(escrowId, msg.sender, uint8(action));
     }
@@ -171,7 +171,7 @@ contract Escrow {
         if (block.timestamp > escrow.safeDeliveryTime) {
             _releaseFunds(escrowId); // Liberar fondos al vendedor
         } else {
-            revert("Aún en periodo para que el comprador inicie una disputa.");
+            revert("Aun en periodo para que el comprador inicie una disputa.");
         }
         return;
     }
@@ -182,7 +182,8 @@ contract Escrow {
         return;
     }
 
-    revert("El pedido está en un estado no manejable por esta función.");
+    revert("El pedido esta en un estado no manejable por esta funcion.");
     }
 
 }
+
