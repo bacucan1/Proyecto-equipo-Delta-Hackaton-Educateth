@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
  */
 contract Escrow { 
     // Estados posibles del pedido
-    enum State { CREATED, AWAITING_DELIVERY, COMPLETE, REFUNDED }
+    enum State { AWAITING_DELIVERY, DELIVERED, COMPLETE, REFUNDED }
 
     // Estructura de cada pedido de escrow
     struct Escrow {
@@ -55,6 +55,16 @@ contract Escrow {
         emit EscrowCreated(escrowCount, msg.sender, _payee, msg.value, _deadline);
         return escrowCount;
     }
+
+    // Marcar el producto como enviado
+    function markAsDelivered(uint256 escrowId) external {
+    Escrow storage escrow = escrows[escrowId];
+    require(msg.sender == escrow.payee, "Solo el vendedor puede marcar como enviado.");
+    require(escrow.currentState == State.AWAITING_DELIVERY, "El pedido no está listo para ser marcado como enviado.");
+
+    escrow.currentState = State.DELIVERED;
+    }
+
 
     // Liberar los fondos al vendedor
     function releaseFunds(uint256 escrowId) external {
