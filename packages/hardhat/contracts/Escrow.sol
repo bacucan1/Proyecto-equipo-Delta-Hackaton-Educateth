@@ -30,9 +30,12 @@ contract Escrow {
 
     // Eventos
     event EscrowCreated(uint256 indexed escrowId, address indexed payer, address indexed payee, uint256 amount, uint256 deadline);
+    event OrderMarkedAsDelivered(uint256 indexed escrowId, address indexed seller);
     event FundsReleased(uint256 indexed escrowId, address indexed payee, uint256 amount);
     event FundsRefunded(uint256 indexed escrowId, address indexed payer, uint256 amount);
     event DisputeInitiated(uint256 indexed escrowId, address indexed initiator);
+    event DeadlineExtended(uint256 indexed escrowId, uint256 newDeadline);
+
 
 
     // Modificadores
@@ -47,6 +50,13 @@ contract Escrow {
     );
     _;
     }
+
+    modifier onlyPayee(uint256 escrowId) {
+    Escrow storage escrow = escrows[escrowId];
+    require(msg.sender == escrow.payee, "Solo el vendedor puede ejecutar esta acción.");
+    _;
+    }
+
 
 
     // Crear y fondear un nuevo pedido de escrow
@@ -69,12 +79,12 @@ contract Escrow {
     }
 
     // Marcar el producto como enviado
-    function markAsDelivered(uint256 escrowId) external {
+    function markAsDelivered(uint256 escrowId) external onlyPayee(escrowId) {
     Escrow storage escrow = escrows[escrowId];
-    require(msg.sender == escrow.payee, "Solo el vendedor puede marcar como enviado.");
-    require(escrow.currentState == State.AWAITING_DELIVERY, "El pedido no está listo para ser marcado como enviado.");
+    require(escrow.currentState == State.AWAITING_DELIVERY, "El estado del pedido no es para ser enviado");
 
-    escrow.currentState = State.DELIVERED;
+    escrow.currentState = State.DELIVERED;    // Cambia el estado a DELIVERED
+    emit OrderMarkedAsDelivered(escrowId, msg.sender); // Opción: Podrías emitir un evento aquí
     }
 
     // Libera los fondos al vendedor
@@ -101,13 +111,23 @@ contract Escrow {
     emit FundsRefunded(escrowId, escrow.payer, escrow.amount); // Emite un evento para registrar la acción
     }
 
+    // Iniciar Disputas por solo los participantes
     function initiateDispute(uint256 escrowId) external onlyParticipants(escrowId) {
     Escrow storage escrow = escrows[escrowId];
     require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "Estado no apto para iniciar disputa.");
 
     escrow.currentState = State.IN_DISPUTE; // Cambia el estado a IN_DISPUTE
     emit DisputeInitiated(escrowId, msg.sender);  // Emite un evento para registrar la disputa
+    }
 
+    // Extensión del periodo de tiempo de la transacción
+    function extendDeadline(uint256 escrowId, uint256 newDeadline) external onlyArbiter {
+    Escrow storage escrow = escrows[escrowId];
+    require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "Estado no apto para extender el plazo.");
+    require(newDeadline > escrow.deadline, "La nueva fecha debe ser mayor al plazo actual.");
+
+    escrow.deadline = newDeadline;     // Actualiza el plazo
+    emit DeadlineExtended(escrowId, newDeadline);  // Emite un evento para registrar la extensión del plazo
     }
 
     // Manejar plazos vencidos
