@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
  */
 contract Escrow { 
     // Estados posibles del pedido
-    enum State { AWAITING_DELIVERY, DELIVERED, COMPLETE, REFUNDED }
+    enum State { AWAITING_DELIVERY, DELIVERED, COMPLETE, REFUNDED, IN_DISPUTE }
 
     // Estructura de cada pedido de escrow
     struct Escrow {
@@ -32,6 +32,22 @@ contract Escrow {
     event EscrowCreated(uint256 indexed escrowId, address indexed payer, address indexed payee, uint256 amount, uint256 deadline);
     event FundsReleased(uint256 indexed escrowId, address indexed payee, uint256 amount);
     event FundsRefunded(uint256 indexed escrowId, address indexed payer, uint256 amount);
+    event DisputeInitiated(uint256 indexed escrowId, address indexed initiator);
+
+
+    // Modificadores
+    modifier onlyArbiter() {
+    require(msg.sender == globalArbiter, "Solo el árbitro puede realizar esta acción.");
+    _;
+    }
+
+    modifier onlyParticipants(uint256 escrowId) {
+    Escrow storage escrow = escrows[escrowId];
+    require(msg.sender == escrow.payer || msg.sender == escrow.payee,"Solo el comprador o el vendedor pueden ejecutar esta acción."
+    );
+    _;
+    }
+
 
     // Crear y fondear un nuevo pedido de escrow
     function createAndDeposit(address _payee, uint256 _deadline) external payable returns (uint256) {
@@ -83,6 +99,15 @@ contract Escrow {
     payable(escrow.payer).transfer(escrow.amount);  // Transfiere los fondos al comprador
 
     emit FundsRefunded(escrowId, escrow.payer, escrow.amount); // Emite un evento para registrar la acción
+    }
+
+    function initiateDispute(uint256 escrowId) external onlyParticipants(escrowId) {
+    Escrow storage escrow = escrows[escrowId];
+    require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, "Estado no apto para iniciar disputa.");
+
+    escrow.currentState = State.IN_DISPUTE; // Cambia el estado a IN_DISPUTE
+    emit DisputeInitiated(escrowId, msg.sender);  // Emite un evento para registrar la disputa
+
     }
 
     // Manejar plazos vencidos
