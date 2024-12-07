@@ -98,7 +98,7 @@ export const Header = () => {
             <Image alt="SmartAsist logo" className="cursor-pointer" fill src="/favicon.png" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight text-gray-900 dark:text-white">SmartAsist</span>
+            <span className="font-bold leading-tight text-gray-900 dark:text-white">SmartAssist</span>
             <span className="text-xs text-gray-700 dark:text-gray-300">AI to make easier your life</span>
           </div>
         </Link>
