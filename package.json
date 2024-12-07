@@ -16,6 +16,7 @@
     "fork": "yarn workspace @se-2/hardhat fork",
     "format": "yarn next:format && yarn hardhat:format",
     "generate": "yarn workspace @se-2/hardhat generate",
+    "hardhat": "hardhat",
     "hardhat-verify": "yarn workspace @se-2/hardhat hardhat-verify",
     "hardhat:format": "yarn workspace @se-2/hardhat format",
     "hardhat:lint": "yarn workspace @se-2/hardhat lint",
@@ -35,6 +36,7 @@
     "verify": "yarn workspace @se-2/hardhat verify"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-verify": "^2.0.12",
     "@types/axios": "^0.9.36",
     "@types/chai": "^5.0.1",
     "husky": "^9.1.7",
