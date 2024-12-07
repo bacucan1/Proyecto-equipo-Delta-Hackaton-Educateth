@@ -1,0 +1,507 @@
+{
+  "address": "0x4F5566E09370798f15a12fa35E257F8a21F020Ba",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newDeadline",
+          "type": "uint256"
+        }
+      ],
+      "name": "DeadlineExtended",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "initiator",
+          "type": "address"
+        }
+      ],
+      "name": "DisputeInitiated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "resolver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "action",
+          "type": "uint8"
+        }
+      ],
+      "name": "DisputeResolved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payee",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "deadline",
+          "type": "uint256"
+        }
+      ],
+      "name": "EscrowCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "FundsRefunded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payee",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "FundsReleased",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "seller",
+          "type": "address"
+        }
+      ],
+      "name": "OrderMarkedAsDelivered",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "SAFE_TIME",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_payee",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_deadline",
+          "type": "uint256"
+        }
+      ],
+      "name": "createAndDeposit",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "escrowCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "escrows",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "payee",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deadline",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "safeDeliveryTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum Escrowdelta.State",
+          "name": "currentState",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bool",
+          "name": "inDispute",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "globalArbiter",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        }
+      ],
+      "name": "handleDeadline",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        }
+      ],
+      "name": "initiateDispute",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        }
+      ],
+      "name": "markAsDelivered",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "escrowId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum Escrowdelta.DisputeAction",
+          "name": "action",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newDeadline",
+          "type": "uint256"
+        }
+      ],
+      "name": "resolveDispute",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xcf22aaaef442bd92a4736c09e2ab02f666b1f3aa40216b9a07380b17c06d24ae",
+  "receipt": {
+    "to": null,
+    "from": "0x996dC7647822e9bbE2E7D1aC83Bea1b25112364F",
+    "contractAddress": "0x4F5566E09370798f15a12fa35E257F8a21F020Ba",
+    "transactionIndex": 1,
+    "gasUsed": "1095917",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x4faafd2a46b6b2b069968486e7bb3be67e3839ff7b7618bd246a662454ea6639",
+    "transactionHash": "0xcf22aaaef442bd92a4736c09e2ab02f666b1f3aa40216b9a07380b17c06d24ae",
+    "logs": [],
+    "blockNumber": 104510224,
+    "cumulativeGasUsed": "1095917",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "ef2b45691e5bee4dca1e2545753fe498",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newDeadline\",\"type\":\"uint256\"}],\"name\":\"DeadlineExtended\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"initiator\",\"type\":\"address\"}],\"name\":\"DisputeInitiated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"resolver\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"action\",\"type\":\"uint8\"}],\"name\":\"DisputeResolved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"payer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"payee\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"EscrowCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"payer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"FundsRefunded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"payee\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"FundsReleased\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"seller\",\"type\":\"address\"}],\"name\":\"OrderMarkedAsDelivered\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"SAFE_TIME\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_payee\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_deadline\",\"type\":\"uint256\"}],\"name\":\"createAndDeposit\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"escrowCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"escrows\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"payer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"payee\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"safeDeliveryTime\",\"type\":\"uint256\"},{\"internalType\":\"enum Escrowdelta.State\",\"name\":\"currentState\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"inDispute\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"globalArbiter\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"}],\"name\":\"handleDeadline\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"}],\"name\":\"initiateDispute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"}],\"name\":\"markAsDelivered\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"escrowId\",\"type\":\"uint256\"},{\"internalType\":\"enum Escrowdelta.DisputeAction\",\"name\":\"action\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"newDeadline\",\"type\":\"uint256\"}],\"name\":\"resolveDispute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Gesti\\u00f3n de acuerdos entre comprador, vendedor y \\u00e1rbitro.      Nota: \\u00c1rbitro global definido temporalmente; mejorar para escalabilidad futura.\",\"kind\":\"dev\",\"methods\":{},\"title\":\"Escrow Contract\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Escrowdelta.sol\":\"Escrowdelta\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/Escrowdelta.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\n/**\\n * @title Escrow Contract\\n * @dev Gesti\\u00f3n de acuerdos entre comprador, vendedor y \\u00e1rbitro.\\n *      Nota: \\u00c1rbitro global definido temporalmente; mejorar para escalabilidad futura.\\n */\\ncontract Escrowdelta { \\n    // Estados posibles del pedido\\n    enum State { AWAITING_DELIVERY, DELIVERED, COMPLETE, REFUNDED }\\n    // Resoluciones posibles de las disputas\\n    enum DisputeAction { RELEASE_FUNDS, REFUND, EXTEND_DEADLINE }\\n\\n    // Estructura de cada pedido de escrow\\n    struct Escrow {\\n        address payer;\\n        address payee;\\n        uint256 amount;\\n        uint256 deadline;\\n        uint256 safeDeliveryTime;\\n        State currentState;\\n        bool inDispute;\\n    }\\n\\n    mapping(uint256 => Escrow) public escrows; // Almacena los pedidos por ID\\n\\n    uint256 public escrowCount; // Contador para IDs \\u00fanicos\\n    address public globalArbiter; // \\u00c1rbitro global temporal\\n    uint256 public constant SAFE_TIME = 24 * 60 * 60; // Tiempo seguro de 24 horas en segundos\\n\\n    // Constructor\\n    constructor() {\\n        globalArbiter = 0x556ffE28AF4661257F299a9a38e81cD937Adbe3f;\\n    }\\n\\n    // Eventos\\n    event EscrowCreated(uint256 indexed escrowId, address indexed payer, address indexed payee, uint256 amount, uint256 deadline);\\n    event OrderMarkedAsDelivered(uint256 indexed escrowId, address indexed seller);\\n    event FundsReleased(uint256 indexed escrowId, address indexed payee, uint256 amount);\\n    event FundsRefunded(uint256 indexed escrowId, address indexed payer, uint256 amount);\\n    event DisputeInitiated(uint256 indexed escrowId, address indexed initiator);\\n    event DeadlineExtended(uint256 indexed escrowId, uint256 newDeadline);\\n    event DisputeResolved(uint256 indexed escrowId, address indexed resolver, uint8 action);\\n\\n    // Modificadores\\n    modifier onlyArbiter() {\\n    require(msg.sender == globalArbiter, \\\"Solo el arbitro puede realizar esta accion.\\\");\\n    _;\\n    }\\n\\n    modifier onlyParticipants(uint256 escrowId) {\\n    Escrow storage escrow = escrows[escrowId];\\n    require(msg.sender == escrow.payer || msg.sender == escrow.payee,\\\"Solo el comprador o el vendedor pueden ejecutar esta accion.\\\"\\n    );\\n    _;\\n    }\\n\\n    modifier onlyPayee(uint256 escrowId) {\\n    Escrow storage escrow = escrows[escrowId];\\n    require(msg.sender == escrow.payee, \\\"Solo el vendedor puede ejecutar esta accion.\\\");\\n    _;\\n    }\\n\\n\\n\\n    // Crear y fondear un nuevo pedido de escrow\\n    function createAndDeposit(address _payee, uint256 _deadline) external payable returns (uint256) {\\n        require(msg.value > 0, \\\"El monto debe ser mayor a cero.\\\");\\n        require(block.timestamp < _deadline, \\\"Fecha limite invalida.\\\");\\n        require(_payee != address(0), \\\"Direccion del vendedor invalida.\\\");\\n\\n        escrowCount++;\\n        escrows[escrowCount] = Escrow({\\n            payer: msg.sender,\\n            payee: _payee,\\n            amount: msg.value,\\n            deadline: _deadline,\\n            safeDeliveryTime: _deadline + SAFE_TIME,\\n            currentState: State.AWAITING_DELIVERY,\\n            inDispute: false\\n        });\\n\\n        emit EscrowCreated(escrowCount, msg.sender, _payee, msg.value, _deadline);\\n        return escrowCount;\\n    }\\n\\n    // Marcar el producto como enviado\\n    function markAsDelivered(uint256 escrowId) external onlyPayee(escrowId) {\\n    Escrow storage escrow = escrows[escrowId];\\n    require(escrow.currentState == State.AWAITING_DELIVERY, \\\"El estado del pedido no es para ser enviado\\\");\\n\\n    escrow.currentState = State.DELIVERED;    // Cambia el estado a DELIVERED\\n    emit OrderMarkedAsDelivered(escrowId, msg.sender); // Opci\\u00f3n: Podr\\u00edas emitir un evento aqu\\u00ed\\n    }\\n\\n    // Libera los fondos al vendedor\\n    function _releaseFunds(uint256 escrowId) internal {\\n    Escrow storage escrow = escrows[escrowId];  \\n    escrow.currentState = State.COMPLETE; // Actualiza el estado a COMPLETE  \\n    payable(escrow.payee).transfer(escrow.amount); // Transfiere los fondos al vendedor\\n\\n    emit FundsReleased(escrowId, escrow.payee, escrow.amount);   // Emite un evento para registrar la acci\\u00f3n\\n    }\\n\\n    // Reembolsar los fondos al comprador\\n    function _refund(uint256 escrowId) internal {\\n    Escrow storage escrow = escrows[escrowId];\\n    escrow.currentState = State.REFUNDED; // Actualiza el estado a REFUNDED\\n    payable(escrow.payer).transfer(escrow.amount);  // Transfiere los fondos al comprador\\n\\n    emit FundsRefunded(escrowId, escrow.payer, escrow.amount); // Emite un evento para registrar la acci\\u00f3n\\n    }\\n\\n    // Iniciar Disputas por solo los participantes\\n    function initiateDispute(uint256 escrowId) external onlyParticipants(escrowId) {\\n    Escrow storage escrow = escrows[escrowId];\\n    require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, \\\"Estado no apto para iniciar disputa.\\\");\\n    require(block.timestamp > escrow.deadline,\\\"No se puede iniciar disputa mientras el plazo este en curso.\\\");\\n    escrow.inDispute = true; // Activa la disputa\\n    emit DisputeInitiated(escrowId, msg.sender);  // Emite un evento para registrar la disputa\\n    }\\n\\n    // Extensi\\u00f3n del periodo de tiempo de la transacci\\u00f3n\\n    function extendDeadline(uint256 escrowId, uint256 newDeadline) internal onlyArbiter {\\n    Escrow storage escrow = escrows[escrowId];\\n    require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, \\\"Estado no apto para extender el plazo.\\\");\\n    require(newDeadline > escrow.deadline, \\\"La nueva fecha debe ser mayor al plazo actual.\\\");\\n\\n    escrow.deadline = newDeadline;     // Actualiza el plazo\\n    emit DeadlineExtended(escrowId, newDeadline);  // Emite un evento para registrar la extensi\\u00f3n del plazo\\n    }\\n\\n    //Resolucion de disputas por el arbitro\\n\\n    function resolveDispute(uint256 escrowId, DisputeAction action, uint256 newDeadline) external onlyArbiter {\\n    Escrow storage escrow = escrows[escrowId];\\n    require(escrow.inDispute, \\\"No hay una disputa activa para este pedido.\\\");\\n\\n    if (action == DisputeAction.RELEASE_FUNDS) {\\n        require(escrow.currentState == State.DELIVERED, \\\"No se Puede Liberar fondos, No se Envio el Producto\\\");\\n        _releaseFunds(escrowId); //Libera fondos al Vendedor\\n    } else if (action == DisputeAction.REFUND) {\\n        require(escrow.currentState == State.AWAITING_DELIVERY || escrow.currentState == State.DELIVERED, \\\"No se Puede Reembolsar, Estado no permitido\\\");\\n        _refund(escrowId); //Reembolsa fondos al Comprador\\n    } else if (action == DisputeAction.EXTEND_DEADLINE) {\\n        escrow.inDispute = false;\\n        extendDeadline(escrowId, newDeadline); //Extiende el periodo de tiempo\\n    } else {\\n        revert(\\\"Accion invalida para resolver la disputa.\\\");\\n    }\\n    emit DisputeResolved(escrowId, msg.sender, uint8(action));\\n    }\\n\\n\\n    // Manejar plazos vencidos\\n    function handleDeadline(uint256 escrowId) external onlyParticipants(escrowId) {\\n    Escrow storage escrow = escrows[escrowId];\\n\\n    // Asegurarse de que el pedido no est\\u00e9 en disputa\\n    require(!escrow.inDispute, \\\"El pedido esta en disputa y no puede manejar plazos.\\\");\\n\\n    // Caso 1: El comprador ya recibi\\u00f3 el producto antes del `deadline`\\n    if (block.timestamp <= escrow.deadline && escrow.currentState == State.DELIVERED) {\\n    require(msg.sender == escrow.payer, \\\"Solo el comprador puede liberar los fondos antes del deadline.\\\");\\n    _releaseFunds(escrowId);\\n    return;\\n    }\\n\\n\\n    // Caso 2: El producto fue enviado, pero el `safeTime` expir\\u00f3 sin disputa\\n    if (block.timestamp > escrow.deadline && escrow.currentState == State.DELIVERED) {\\n        if (block.timestamp > escrow.safeDeliveryTime) {\\n            _releaseFunds(escrowId); // Liberar fondos al vendedor\\n        } else {\\n            revert(\\\"Aun en periodo para que el comprador inicie una disputa.\\\");\\n        }\\n        return;\\n    }\\n\\n    // Caso 3: El producto no fue enviado antes del `deadline`\\n    if (block.timestamp > escrow.deadline && escrow.currentState == State.AWAITING_DELIVERY) {\\n        _refund(escrowId); // Reembolsar fondos al comprador\\n        return;\\n    }\\n\\n    revert(\\\"Actualmente no puede ejecutar esta operacion, verifique el estatus de su pedido\\\");\\n    }\\n\\n}\\n\\n\",\"keccak256\":\"0xbd72a3f7039c9c10b97f35de47ad9ea0379a6461fd1d5a16c9c7f3ad5f25d947\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50600280546001600160a01b03191673556ffe28af4661257f299a9a38e81cd937adbe3f179055611270806100466000396000f3fe6080604052600436106100865760003560e01c8063682a4d5511610059578063682a4d551461018e57806371635c03146101a15780637a43c49a146101c1578063968ee6ed146101d8578063db5d6c41146101f857600080fd5b8063012f52ee1461008b57806326398ab61461011057806355428d0e14610132578063675ac67a1461016a575b600080fd5b34801561009757600080fd5b506100f46100a6366004611048565b6000602081905290815260409020805460018201546002830154600384015460048501546005909501546001600160a01b039485169593909416939192909160ff8082169161010090041687565b6040516101079796959493929190611077565b60405180910390f35b34801561011c57600080fd5b5061013061012b366004611048565b610218565b005b34801561013e57600080fd5b50600254610152906001600160a01b031681565b6040516001600160a01b039091168152602001610107565b34801561017657600080fd5b5061018060015481565b604051908152602001610107565b61018061019c3660046110dc565b61052d565b3480156101ad57600080fd5b506101306101bc366004611048565b61078c565b3480156101cd57600080fd5b506101806201518081565b3480156101e457600080fd5b506101306101f3366004611048565b61093e565b34801561020457600080fd5b50610130610213366004611114565b610a8b565b600081815260208190526040902080548291906001600160a01b031633148061024d575060018101546001600160a01b031633145b6102725760405162461bcd60e51b815260040161026990611150565b60405180910390fd5b60008381526020819052604090206005810154610100900460ff16156102f75760405162461bcd60e51b815260206004820152603460248201527f456c2070656469646f206573746120656e20646973707574612079206e6f20706044820152733ab2b2329036b0b732b530b910383630bd37b99760611b6064820152608401610269565b8060030154421115801561032357506001600582015460ff16600381111561032157610321611061565b145b156103b65780546001600160a01b031633146103a75760405162461bcd60e51b815260206004820152603e60248201527f536f6c6f20656c20636f6d707261646f72207075656465206c6962657261722060448201527f6c6f7320666f6e646f7320616e7465732064656c20646561646c696e652e00006064820152608401610269565b6103b084610d76565b50505050565b8060030154421180156103e157506001600582015460ff1660038111156103df576103df611061565b145b1561046e578060040154421115610400576103fb84610d76565b6103b0565b60405162461bcd60e51b815260206004820152603860248201527f41756e20656e20706572696f646f20706172612071756520656c20636f6d707260448201527f61646f7220696e6963696520756e6120646973707574612e00000000000000006064820152608401610269565b80600301544211801561049957506000600582015460ff16600381111561049757610497611061565b145b156104a7576103b084610e2b565b60405162461bcd60e51b815260206004820152604f60248201527f41637475616c6d656e7465206e6f20707565646520656a65637574617220657360448201527f7461206f7065726163696f6e2c2076657269666971756520656c20657374617460648201526e75732064652073752070656469646f60881b608482015260a401610269565b600080341161057e5760405162461bcd60e51b815260206004820152601f60248201527f456c206d6f6e746f206465626520736572206d61796f722061206365726f2e006044820152606401610269565b8142106105c65760405162461bcd60e51b81526020600482015260166024820152752332b1b430903634b6b4ba329034b73b30b634b2309760511b6044820152606401610269565b6001600160a01b03831661061c5760405162461bcd60e51b815260206004820181905260248201527f446972656363696f6e2064656c2076656e6465646f7220696e76616c6964612e6044820152606401610269565b6001805490600061062c836111c3565b91905055506040518060e00160405280336001600160a01b03168152602001846001600160a01b03168152602001348152602001838152602001620151808461067591906111dc565b81526020016000815260006020918201819052600180548252818352604091829020845181546001600160a01b03199081166001600160a01b0392831617835594860151828401805490961691161790935590830151600283015560608301516003808401919091556080840151600484015560a08401516005840180549193909260ff1990921691849081111561070f5761070f611061565b021790555060c09190910151600590910180549115156101000261ff001990921691909117905560015460408051348152602081018590526001600160a01b03861692339290917f59e4b8728799382406714f1c57de5c893d2772f9a8bf9950c5afe4397e648654910160405180910390a4506001545b92915050565b600081815260208190526040902080548291906001600160a01b03163314806107c1575060018101546001600160a01b031633145b6107dd5760405162461bcd60e51b815260040161026990611150565b600083815260208190526040812090600582015460ff16600381111561080557610805611061565b148061082957506001600582015460ff16600381111561082757610827611061565b145b6108815760405162461bcd60e51b8152602060048201526024808201527f45737461646f206e6f206170746f207061726120696e696369617220646973706044820152633aba309760e11b6064820152608401610269565b806003015442116108fa5760405162461bcd60e51b815260206004820152603c60248201527f4e6f20736520707565646520696e69636961722064697370757461206d69656e60448201527f7472617320656c20706c617a6f206573746520656e20637572736f2e000000006064820152608401610269565b60058101805461ff001916610100179055604051339085907f36c922bd8d190e14998569179446c5c73a76b53b93263c8399be1877e4ea9ed590600090a350505050565b600081815260208190526040902060018101548291906001600160a01b031633146109c05760405162461bcd60e51b815260206004820152602c60248201527f536f6c6f20656c2076656e6465646f7220707565646520656a6563757461722060448201526b32b9ba309030b1b1b4b7b71760a11b6064820152608401610269565b600083815260208190526040812090600582015460ff1660038111156109e8576109e8611061565b14610a495760405162461bcd60e51b815260206004820152602b60248201527f456c2065737461646f2064656c2070656469646f206e6f20657320706172612060448201526a73657220656e766961646f60a81b6064820152608401610269565b60058101805460ff19166001179055604051339085907ffd29b6840a9d9ec5994eff4c0cac5a5e94c6f73531ba28a90e873534cab254ff90600090a350505050565b6002546001600160a01b03163314610ab55760405162461bcd60e51b8152600401610269906111ef565b60008381526020819052604090206005810154610100900460ff16610b305760405162461bcd60e51b815260206004820152602b60248201527f4e6f2068617920756e612064697370757461206163746976612070617261206560448201526a39ba32903832b234b2379760a91b6064820152608401610269565b6000836002811115610b4457610b44611061565b03610bdb576001600582015460ff166003811115610b6457610b64611061565b14610bcd5760405162461bcd60e51b815260206004820152603360248201527f4e6f207365205075656465204c69626572617220666f6e646f732c204e6f20736044820152726520456e76696f20656c2050726f647563746f60681b6064820152608401610269565b610bd684610d76565b610d26565b6001836002811115610bef57610bef611061565b03610c9c576000600582015460ff166003811115610c0f57610c0f611061565b1480610c3357506001600582015460ff166003811115610c3157610c31611061565b145b610c935760405162461bcd60e51b815260206004820152602b60248201527f4e6f207365205075656465205265656d626f6c7361722c2045737461646f206e60448201526a6f207065726d697469646f60a81b6064820152608401610269565b610bd684610e2b565b6002836002811115610cb057610cb0611061565b03610ccc5760058101805461ff0019169055610bd68483610ecc565b60405162461bcd60e51b815260206004820152602960248201527f416363696f6e20696e76616c6964612070617261207265736f6c766572206c61604482015268103234b9b83aba309760b91b6064820152608401610269565b33847f0a1a08d07b8bb2ef5e6eea14f3719239138f1ce03a4ceea3196c1000a265c12a856002811115610d5b57610d5b611061565b60405160ff909116815260200160405180910390a350505050565b60008181526020819052604090206005810180546002919060ff19166001830217905550600181015460028201546040516001600160a01b039092169181156108fc0291906000818181858888f19350505050158015610dda573d6000803e3d6000fd5b50600181015460028201546040519081526001600160a01b039091169083907f6e3c6096795c8298a218b2cfb8bde42726ff7c9a3d27b4d3ba41ab7f74feb5fb906020015b60405180910390a35050565b60008181526020819052604080822060058101805460ff1916600317905580546002820154925191936001600160a01b03909116926108fc811502929091818181858888f19350505050158015610e86573d6000803e3d6000fd5b50805460028201546040519081526001600160a01b039091169083907f80b577b4fc190ab86d963549e29f496afd079c5d81a2480d61217d4b5060a28c90602001610e1f565b6002546001600160a01b03163314610ef65760405162461bcd60e51b8152600401610269906111ef565b600082815260208190526040812090600582015460ff166003811115610f1e57610f1e611061565b1480610f4257506001600582015460ff166003811115610f4057610f40611061565b145b610f9d5760405162461bcd60e51b815260206004820152602660248201527f45737461646f206e6f206170746f207061726120657874656e64657220656c20604482015265383630bd379760d11b6064820152608401610269565b806003015482116110075760405162461bcd60e51b815260206004820152602e60248201527f4c61206e75657661206665636861206465626520736572206d61796f7220616c60448201526d10383630bd379030b1ba3ab0b61760911b6064820152608401610269565b6003810182905560405182815283907f073d5fd87a7e0c2a384727f9aab2e84826370623aba582638b425a417e799a2c9060200160405180910390a2505050565b60006020828403121561105a57600080fd5b5035919050565b634e487b7160e01b600052602160045260246000fd5b6001600160a01b0388811682528716602082015260408101869052606081018590526080810184905260e08101600484106110c257634e487b7160e01b600052602160045260246000fd5b8360a083015282151560c083015298975050505050505050565b600080604083850312156110ef57600080fd5b82356001600160a01b038116811461110657600080fd5b946020939093013593505050565b60008060006060848603121561112957600080fd5b8335925060208401356003811061113f57600080fd5b929592945050506040919091013590565b6020808252603c908201527f536f6c6f20656c20636f6d707261646f72206f20656c2076656e6465646f722060408201527f70756564656e20656a656375746172206573746120616363696f6e2e00000000606082015260800190565b634e487b7160e01b600052601160045260246000fd5b6000600182016111d5576111d56111ad565b5060010190565b80820180821115610786576107866111ad565b6020808252602b908201527f536f6c6f20656c206172626974726f207075656465207265616c697a6172206560408201526a39ba309030b1b1b4b7b71760a91b60608201526080019056fea2646970667358221220789ea24ff049c5f4a3e386d436b380f4a55fb00ddb6906f20c758ec5a38cd6a464736f6c63430008140033",
+  "deployedBytecode": "0x6080604052600436106100865760003560e01c8063682a4d5511610059578063682a4d551461018e57806371635c03146101a15780637a43c49a146101c1578063968ee6ed146101d8578063db5d6c41146101f857600080fd5b8063012f52ee1461008b57806326398ab61461011057806355428d0e14610132578063675ac67a1461016a575b600080fd5b34801561009757600080fd5b506100f46100a6366004611048565b6000602081905290815260409020805460018201546002830154600384015460048501546005909501546001600160a01b039485169593909416939192909160ff8082169161010090041687565b6040516101079796959493929190611077565b60405180910390f35b34801561011c57600080fd5b5061013061012b366004611048565b610218565b005b34801561013e57600080fd5b50600254610152906001600160a01b031681565b6040516001600160a01b039091168152602001610107565b34801561017657600080fd5b5061018060015481565b604051908152602001610107565b61018061019c3660046110dc565b61052d565b3480156101ad57600080fd5b506101306101bc366004611048565b61078c565b3480156101cd57600080fd5b506101806201518081565b3480156101e457600080fd5b506101306101f3366004611048565b61093e565b34801561020457600080fd5b50610130610213366004611114565b610a8b565b600081815260208190526040902080548291906001600160a01b031633148061024d575060018101546001600160a01b031633145b6102725760405162461bcd60e51b815260040161026990611150565b60405180910390fd5b60008381526020819052604090206005810154610100900460ff16156102f75760405162461bcd60e51b815260206004820152603460248201527f456c2070656469646f206573746120656e20646973707574612079206e6f20706044820152733ab2b2329036b0b732b530b910383630bd37b99760611b6064820152608401610269565b8060030154421115801561032357506001600582015460ff16600381111561032157610321611061565b145b156103b65780546001600160a01b031633146103a75760405162461bcd60e51b815260206004820152603e60248201527f536f6c6f20656c20636f6d707261646f72207075656465206c6962657261722060448201527f6c6f7320666f6e646f7320616e7465732064656c20646561646c696e652e00006064820152608401610269565b6103b084610d76565b50505050565b8060030154421180156103e157506001600582015460ff1660038111156103df576103df611061565b145b1561046e578060040154421115610400576103fb84610d76565b6103b0565b60405162461bcd60e51b815260206004820152603860248201527f41756e20656e20706572696f646f20706172612071756520656c20636f6d707260448201527f61646f7220696e6963696520756e6120646973707574612e00000000000000006064820152608401610269565b80600301544211801561049957506000600582015460ff16600381111561049757610497611061565b145b156104a7576103b084610e2b565b60405162461bcd60e51b815260206004820152604f60248201527f41637475616c6d656e7465206e6f20707565646520656a65637574617220657360448201527f7461206f7065726163696f6e2c2076657269666971756520656c20657374617460648201526e75732064652073752070656469646f60881b608482015260a401610269565b600080341161057e5760405162461bcd60e51b815260206004820152601f60248201527f456c206d6f6e746f206465626520736572206d61796f722061206365726f2e006044820152606401610269565b8142106105c65760405162461bcd60e51b81526020600482015260166024820152752332b1b430903634b6b4ba329034b73b30b634b2309760511b6044820152606401610269565b6001600160a01b03831661061c5760405162461bcd60e51b815260206004820181905260248201527f446972656363696f6e2064656c2076656e6465646f7220696e76616c6964612e6044820152606401610269565b6001805490600061062c836111c3565b91905055506040518060e00160405280336001600160a01b03168152602001846001600160a01b03168152602001348152602001838152602001620151808461067591906111dc565b81526020016000815260006020918201819052600180548252818352604091829020845181546001600160a01b03199081166001600160a01b0392831617835594860151828401805490961691161790935590830151600283015560608301516003808401919091556080840151600484015560a08401516005840180549193909260ff1990921691849081111561070f5761070f611061565b021790555060c09190910151600590910180549115156101000261ff001990921691909117905560015460408051348152602081018590526001600160a01b03861692339290917f59e4b8728799382406714f1c57de5c893d2772f9a8bf9950c5afe4397e648654910160405180910390a4506001545b92915050565b600081815260208190526040902080548291906001600160a01b03163314806107c1575060018101546001600160a01b031633145b6107dd5760405162461bcd60e51b815260040161026990611150565b600083815260208190526040812090600582015460ff16600381111561080557610805611061565b148061082957506001600582015460ff16600381111561082757610827611061565b145b6108815760405162461bcd60e51b8152602060048201526024808201527f45737461646f206e6f206170746f207061726120696e696369617220646973706044820152633aba309760e11b6064820152608401610269565b806003015442116108fa5760405162461bcd60e51b815260206004820152603c60248201527f4e6f20736520707565646520696e69636961722064697370757461206d69656e60448201527f7472617320656c20706c617a6f206573746520656e20637572736f2e000000006064820152608401610269565b60058101805461ff001916610100179055604051339085907f36c922bd8d190e14998569179446c5c73a76b53b93263c8399be1877e4ea9ed590600090a350505050565b600081815260208190526040902060018101548291906001600160a01b031633146109c05760405162461bcd60e51b815260206004820152602c60248201527f536f6c6f20656c2076656e6465646f7220707565646520656a6563757461722060448201526b32b9ba309030b1b1b4b7b71760a11b6064820152608401610269565b600083815260208190526040812090600582015460ff1660038111156109e8576109e8611061565b14610a495760405162461bcd60e51b815260206004820152602b60248201527f456c2065737461646f2064656c2070656469646f206e6f20657320706172612060448201526a73657220656e766961646f60a81b6064820152608401610269565b60058101805460ff19166001179055604051339085907ffd29b6840a9d9ec5994eff4c0cac5a5e94c6f73531ba28a90e873534cab254ff90600090a350505050565b6002546001600160a01b03163314610ab55760405162461bcd60e51b8152600401610269906111ef565b60008381526020819052604090206005810154610100900460ff16610b305760405162461bcd60e51b815260206004820152602b60248201527f4e6f2068617920756e612064697370757461206163746976612070617261206560448201526a39ba32903832b234b2379760a91b6064820152608401610269565b6000836002811115610b4457610b44611061565b03610bdb576001600582015460ff166003811115610b6457610b64611061565b14610bcd5760405162461bcd60e51b815260206004820152603360248201527f4e6f207365205075656465204c69626572617220666f6e646f732c204e6f20736044820152726520456e76696f20656c2050726f647563746f60681b6064820152608401610269565b610bd684610d76565b610d26565b6001836002811115610bef57610bef611061565b03610c9c576000600582015460ff166003811115610c0f57610c0f611061565b1480610c3357506001600582015460ff166003811115610c3157610c31611061565b145b610c935760405162461bcd60e51b815260206004820152602b60248201527f4e6f207365205075656465205265656d626f6c7361722c2045737461646f206e60448201526a6f207065726d697469646f60a81b6064820152608401610269565b610bd684610e2b565b6002836002811115610cb057610cb0611061565b03610ccc5760058101805461ff0019169055610bd68483610ecc565b60405162461bcd60e51b815260206004820152602960248201527f416363696f6e20696e76616c6964612070617261207265736f6c766572206c61604482015268103234b9b83aba309760b91b6064820152608401610269565b33847f0a1a08d07b8bb2ef5e6eea14f3719239138f1ce03a4ceea3196c1000a265c12a856002811115610d5b57610d5b611061565b60405160ff909116815260200160405180910390a350505050565b60008181526020819052604090206005810180546002919060ff19166001830217905550600181015460028201546040516001600160a01b039092169181156108fc0291906000818181858888f19350505050158015610dda573d6000803e3d6000fd5b50600181015460028201546040519081526001600160a01b039091169083907f6e3c6096795c8298a218b2cfb8bde42726ff7c9a3d27b4d3ba41ab7f74feb5fb906020015b60405180910390a35050565b60008181526020819052604080822060058101805460ff1916600317905580546002820154925191936001600160a01b03909116926108fc811502929091818181858888f19350505050158015610e86573d6000803e3d6000fd5b50805460028201546040519081526001600160a01b039091169083907f80b577b4fc190ab86d963549e29f496afd079c5d81a2480d61217d4b5060a28c90602001610e1f565b6002546001600160a01b03163314610ef65760405162461bcd60e51b8152600401610269906111ef565b600082815260208190526040812090600582015460ff166003811115610f1e57610f1e611061565b1480610f4257506001600582015460ff166003811115610f4057610f40611061565b145b610f9d5760405162461bcd60e51b815260206004820152602660248201527f45737461646f206e6f206170746f207061726120657874656e64657220656c20604482015265383630bd379760d11b6064820152608401610269565b806003015482116110075760405162461bcd60e51b815260206004820152602e60248201527f4c61206e75657661206665636861206465626520736572206d61796f7220616c60448201526d10383630bd379030b1ba3ab0b61760911b6064820152608401610269565b6003810182905560405182815283907f073d5fd87a7e0c2a384727f9aab2e84826370623aba582638b425a417e799a2c9060200160405180910390a2505050565b60006020828403121561105a57600080fd5b5035919050565b634e487b7160e01b600052602160045260246000fd5b6001600160a01b0388811682528716602082015260408101869052606081018590526080810184905260e08101600484106110c257634e487b7160e01b600052602160045260246000fd5b8360a083015282151560c083015298975050505050505050565b600080604083850312156110ef57600080fd5b82356001600160a01b038116811461110657600080fd5b946020939093013593505050565b60008060006060848603121561112957600080fd5b8335925060208401356003811061113f57600080fd5b929592945050506040919091013590565b6020808252603c908201527f536f6c6f20656c20636f6d707261646f72206f20656c2076656e6465646f722060408201527f70756564656e20656a656375746172206573746120616363696f6e2e00000000606082015260800190565b634e487b7160e01b600052601160045260246000fd5b6000600182016111d5576111d56111ad565b5060010190565b80820180821115610786576107866111ad565b6020808252602b908201527f536f6c6f20656c206172626974726f207075656465207265616c697a6172206560408201526a39ba309030b1b1b4b7b71760a91b60608201526080019056fea2646970667358221220789ea24ff049c5f4a3e386d436b380f4a55fb00ddb6906f20c758ec5a38cd6a464736f6c63430008140033",
+  "devdoc": {
+    "details": "Gestión de acuerdos entre comprador, vendedor y árbitro.      Nota: Árbitro global definido temporalmente; mejorar para escalabilidad futura.",
+    "kind": "dev",
+    "methods": {},
+    "title": "Escrow Contract",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 32,
+        "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+        "label": "escrows",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_uint256,t_struct(Escrow)27_storage)"
+      },
+      {
+        "astId": 34,
+        "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+        "label": "escrowCount",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 36,
+        "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+        "label": "globalArbiter",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_address"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_enum(State)7": {
+        "encoding": "inplace",
+        "label": "enum Escrowdelta.State",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_uint256,t_struct(Escrow)27_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct Escrowdelta.Escrow)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Escrow)27_storage"
+      },
+      "t_struct(Escrow)27_storage": {
+        "encoding": "inplace",
+        "label": "struct Escrowdelta.Escrow",
+        "members": [
+          {
+            "astId": 13,
+            "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+            "label": "payer",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 15,
+            "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+            "label": "payee",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 17,
+            "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+            "label": "amount",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 19,
+            "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+            "label": "deadline",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 21,
+            "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+            "label": "safeDeliveryTime",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 24,
+            "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+            "label": "currentState",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_enum(State)7"
+          },
+          {
+            "astId": 26,
+            "contract": "contracts/Escrowdelta.sol:Escrowdelta",
+            "label": "inDispute",
+            "offset": 1,
+            "slot": "5",
+            "type": "t_bool"
+          }
+        ],
+        "numberOfBytes": "192"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
