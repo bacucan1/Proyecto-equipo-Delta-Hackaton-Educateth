@@ -25,7 +25,7 @@ export const Footer = () => {
             </div>
           )}
           <Link
-            href="https://sepolia.arbiscan.io/address/0x9d29727e3ea804629217b49d9dba49f1ea1f1dab"
+            href="https://sepolia.arbiscan.io/address/0x4568da48b8642dab4addf8585f6b984817c5bbab"
             target="_blank"
             rel="noreferrer"
             className="btn btn-secondary btn-sm font-normal gap-2 flex items-center"
@@ -79,7 +79,7 @@ export const Footer = () => {
               </div>
             )}
             <Link
-              href="https://sepolia.arbiscan.io/address/0x9d29727e3ea804629217b49d9dba49f1ea1f1dab"
+              href="https://sepolia.arbiscan.io/address/0x4568da48b8642dab4addf8585f6b984817c5bbab"
               target="_blank"
               rel="noreferrer"
               className="btn btn-secondary btn-sm font-normal gap-2 flex items-center"

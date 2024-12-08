@@ -38,10 +38,10 @@ const Home: NextPage = () => {
               Chat with Assistant
             </button>
           </Link>
-          <Link href="/debug" passHref>
+          <Link href="/escrow" passHref>
             <button className="flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium text-lg rounded-lg shadow-md transition">
               <ShieldCheckIcon className="h-6 w-6 mr-2" />
-              Debug Contracts
+              Pay with escrow
             </button>
           </Link>
         </div>

@@ -1,25 +1,52 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const EscrowPage: React.FC = () => {
-  const [payee, setPayee] = useState("0x172104Dec113769a5E9a6E00A99e037a42B2778C");
-  const [amount, setAmount] = useState(40); // USD
-  const [deadline, setDeadline] = useState(
-    BigInt(Math.floor(Date.now() / 1000) + 10 * 24 * 60 * 60), // 10 días
-  );
+  const { address: connectedWallet } = useAccount(); // Wallet conectada
   const [userMessage, setUserMessage] = useState<string | null>(null);
+  const [payee, setPayee] = useState("");
+  const [amount, setAmount] = useState(40); // USD
+  const [deadline, setDeadline] = useState(BigInt(Math.floor(Date.now() / 1000) + 10 * 24 * 60 * 60)); // 10 días
   const ethPriceInUSD = 4200; // Precio fijo de ETH en USD
   const amountETH = (amount / ethPriceInUSD).toFixed(6); // Conversión de USD a ETH
+  const [escrows, setEscrows] = useState<any[]>([]); // Lista de escrows detallados
 
-  // Leer el contador de escrows creados
-  const { data: escrowCount } = useScaffoldReadContract({
+  // Leer escrows asociados a la wallet conectada
+  const { data: userEscrows } = useScaffoldReadContract({
     contractName: "Escrowdelta",
-    functionName: "escrowCount",
+    functionName: "getEscrowsByAddress",
+    args: [connectedWallet],
   });
 
-  // Hook para crear y depositar un escrow
+  /* Leer detalles de un escrow específico
+  const { data: escrowDetails } = useScaffoldReadContract({
+    contractName: "Escrowdelta",
+    functionName: "escrows",
+  }); */
+
+  // Actualizar la lista de escrows cuando cambien los `userEscrows`
+  useEffect(() => {
+    const loadEscrows = async () => {
+      if (userEscrows) {
+        const [payerEscrows, payeeEscrows] = userEscrows;
+
+        // Crear la lista combinada de escrows con roles
+        const combinedEscrows = [
+          ...payerEscrows.map((id: bigint) => ({ id, role: "buyer" })),
+          ...payeeEscrows.map((id: bigint) => ({ id, role: "seller" })),
+        ];
+
+        setEscrows(combinedEscrows);
+      }
+    };
+
+    loadEscrows();
+  }, [userEscrows]);
+
+  // Crear un nuevo escrow
   const { writeContractAsync: createAndDeposit, isPending: isCreating } = useScaffoldWriteContract("Escrowdelta");
 
   const handleCreateEscrow = async () => {
@@ -28,16 +55,15 @@ const EscrowPage: React.FC = () => {
       await createAndDeposit({
         functionName: "createAndDeposit",
         args: [payee, BigInt(deadline)],
-        value: BigInt(Math.floor(parseFloat(amountETH) * 10 ** 18)), // Cambio aquí
+        value: BigInt(Math.floor(parseFloat(amountETH) * 10 ** 18)),
       });
-
-      setUserMessage("✅ Escrow created successfully!");
+      setUserMessage("✅ Escrow creado con éxito.");
     } catch (error) {
-      setUserMessage(`❌ Error creating escrow: ${(error as Error).message}`);
+      setUserMessage(`❌ Error al crear escrow: ${(error as Error).message}`);
     }
   };
 
-  // Hook para marcar como entregado
+  // Marcar como entregado
   const { writeContractAsync: markAsDelivered } = useScaffoldWriteContract("Escrowdelta");
 
   const handleMarkAsDelivered = async (escrowId: bigint) => {
@@ -46,32 +72,51 @@ const EscrowPage: React.FC = () => {
         functionName: "markAsDelivered",
         args: [escrowId],
       });
-      setUserMessage(`✅ Escrow #${escrowId} marked as delivered successfully!`);
+      setUserMessage(`✅ Pedido #${escrowId} marcado como enviado.`);
     } catch (error) {
-      setUserMessage(`❌ Error marking escrow #${escrowId} as delivered: ${(error as Error).message}`);
+      setUserMessage(`❌ Error al marcar como enviado: ${(error as Error).message}`);
     }
   };
 
-  // Hook para iniciar una disputa
+  // Confirmar transacción (llama a handleDeadline del contrato)
+  const { writeContractAsync: handleDeadline } = useScaffoldWriteContract("Escrowdelta");
+
+  const handleConfirm = async (escrowId: bigint) => {
+    setUserMessage(null);
+    try {
+      await handleDeadline({
+        functionName: "handleDeadline",
+        args: [escrowId],
+      });
+      setUserMessage(`✅ Escrow #${escrowId} confirmado con éxito.`);
+    } catch (error) {
+      setUserMessage(`❌ Error al confirmar escrow #${escrowId}: ${(error as Error).message}`);
+    }
+  };
+
+  // Iniciar disputa
   const { writeContractAsync: initiateDispute } = useScaffoldWriteContract("Escrowdelta");
 
   const handleInitiateDispute = async (escrowId: bigint) => {
+    setUserMessage(null);
     try {
       await initiateDispute({
         functionName: "initiateDispute",
         args: [escrowId],
       });
-      setUserMessage(`✅ Dispute initiated for Escrow #${escrowId} successfully!`);
+      setUserMessage(`✅ Disputa iniciada para el escrow #${escrowId}.`);
     } catch (error) {
-      setUserMessage(`❌ Error initiating dispute for Escrow #${escrowId}: ${(error as Error).message}`);
+      setUserMessage(`❌ Error al iniciar disputa para el escrow #${escrowId}: ${(error as Error).message}`);
     }
   };
 
   return (
     <div className="container mx-auto py-8 space-y-8">
-      {/* Formulario para crear escrow */}
-      <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Create Escrow</h2>
+      <h1 className="text-3xl font-bold mb-6">Gestión de Escrows</h1>
+
+      {/* Formulario para crear un nuevo escrow */}
+      <div className="bg-gray-800 text-white p-6 rounded-lg">
+        <h2 className="text-2xl font-bold mb-4">Crear Escrow</h2>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-2">Payee Address</label>
           <input
@@ -110,47 +155,87 @@ const EscrowPage: React.FC = () => {
         {userMessage && <p className="text-sm mt-2">{userMessage}</p>}
       </div>
 
-      {/* Listado de Escrows */}
-      <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Your Escrows</h2>
-        {escrowCount ? (
-          <table className="w-full table-auto">
+      {/* Tabla de escrows */}
+      <div className="bg-gray-800 text-white p-6 rounded-lg">
+        <h2 className="text-2xl font-bold mb-4">Tus Escrows</h2>
+        {escrows.length > 0 ? (
+          <table className="table-auto w-full border-collapse border border-gray-600">
             <thead>
-              <tr>
-                <th className="text-left p-2">ID</th>
-                <th className="text-left p-2">Amount</th>
-                <th className="text-left p-2">Payee</th>
-                <th className="text-left p-2">Deadline</th>
-                <th className="text-left p-2">Actions</th>
+              <tr className="bg-gray-700">
+                <th className="border border-gray-600 px-4 py-2 text-left">ID</th>
+                <th className="border border-gray-600 px-4 py-2 text-left">Role</th>
+                <th className="border border-gray-600 px-4 py-2 text-left">State</th>
+                <th className="border border-gray-600 px-4 py-2 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {Array.from({ length: Number(escrowCount) }, (_, idx) => (
-                <tr key={idx}>
-                  <td className="p-2">{idx + 1}</td>
-                  <td className="p-2">Dynamic Amount Here</td>
-                  <td className="p-2">Dynamic Payee Here</td>
-                  <td className="p-2">Dynamic Deadline Here</td>
-                  <td className="p-2 flex space-x-2">
-                    <button
-                      onClick={() => handleMarkAsDelivered(BigInt(idx + 1))}
-                      className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
-                    >
-                      Delivered
-                    </button>
-                    <button
-                      onClick={() => handleInitiateDispute(BigInt(idx + 1))}
-                      className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
-                    >
-                      Dispute
-                    </button>
+              {escrows.map(escrow => (
+                <tr
+                  key={escrow.id.toString()}
+                  className={`${escrow.role === "buyer" ? "bg-blue-900" : "bg-green-900"} hover:bg-gray-700 text-white`}
+                >
+                  <td className="border border-gray-600 px-4 py-2">{escrow.id.toString()}</td>
+                  <td className="border border-gray-600 px-4 py-2">{escrow.role === "buyer" ? "Buyer" : "Seller"}</td>
+                  <td className="border border-gray-600 px-4 py-2">{escrow.currentState || "Unknown"}</td>
+                  <td className="border border-gray-600 px-4 py-2">
+                    <div className="flex flex-wrap gap-2">
+                      {/* Buyer: Confirmar */}
+                      {escrow.role === "buyer" && (
+                        <button
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleConfirm(escrow.id)}
+                        >
+                          Confirmar
+                        </button>
+                      )}
+
+                      {/* Buyer: Iniciar disputa */}
+                      {escrow.role === "buyer" && (
+                        <button
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleInitiateDispute(escrow.id)}
+                        >
+                          Disputa
+                        </button>
+                      )}
+
+                      {/* Seller: Marcar como Enviado */}
+                      {escrow.role === "seller" && (
+                        <button
+                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleMarkAsDelivered(escrow.id)}
+                        >
+                          Enviado
+                        </button>
+                      )}
+
+                      {/* Seller: Confirmar */}
+                      {escrow.role === "seller" && (
+                        <button
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleConfirm(escrow.id)}
+                        >
+                          Confirmar
+                        </button>
+                      )}
+
+                      {/* Seller: Iniciar disputa */}
+                      {escrow.role === "seller" && (
+                        <button
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleInitiateDispute(escrow.id)}
+                        >
+                          Disputa
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p>No escrows found.</p>
+          <p className="text-white">No escrows found.</p>
         )}
       </div>
     </div>
