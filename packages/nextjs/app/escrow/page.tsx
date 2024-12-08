@@ -78,6 +78,38 @@ const EscrowPage: React.FC = () => {
     }
   };
 
+  // Confirmar transacción (llama a handleDeadline del contrato)
+  const { writeContractAsync: handleDeadline } = useScaffoldWriteContract("Escrowdelta");
+
+  const handleConfirm = async (escrowId: bigint) => {
+    setUserMessage(null);
+    try {
+      await handleDeadline({
+        functionName: "handleDeadline",
+        args: [escrowId],
+      });
+      setUserMessage(`✅ Escrow #${escrowId} confirmado con éxito.`);
+    } catch (error) {
+      setUserMessage(`❌ Error al confirmar escrow #${escrowId}: ${(error as Error).message}`);
+    }
+  };
+
+  // Iniciar disputa
+  const { writeContractAsync: initiateDispute } = useScaffoldWriteContract("Escrowdelta");
+
+  const handleInitiateDispute = async (escrowId: bigint) => {
+    setUserMessage(null);
+    try {
+      await initiateDispute({
+        functionName: "initiateDispute",
+        args: [escrowId],
+      });
+      setUserMessage(`✅ Disputa iniciada para el escrow #${escrowId}.`);
+    } catch (error) {
+      setUserMessage(`❌ Error al iniciar disputa para el escrow #${escrowId}: ${(error as Error).message}`);
+    }
+  };
+
   return (
     <div className="container mx-auto py-8 space-y-8">
       <h1 className="text-3xl font-bold mb-6">Gestión de Escrows</h1>
@@ -127,35 +159,83 @@ const EscrowPage: React.FC = () => {
       <div className="bg-gray-800 text-white p-6 rounded-lg">
         <h2 className="text-2xl font-bold mb-4">Tus Escrows</h2>
         {escrows.length > 0 ? (
-          <table className="table-auto w-full">
+          <table className="table-auto w-full border-collapse border border-gray-600">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Role</th>
-                <th>Actions</th>
+              <tr className="bg-gray-700">
+                <th className="border border-gray-600 px-4 py-2 text-left">ID</th>
+                <th className="border border-gray-600 px-4 py-2 text-left">Role</th>
+                <th className="border border-gray-600 px-4 py-2 text-left">State</th>
+                <th className="border border-gray-600 px-4 py-2 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {escrows.map(escrow => (
-                <tr key={escrow.id.toString()} className={escrow.role === "buyer" ? "bg-blue-100" : "bg-green-100"}>
-                  <td>{escrow.id.toString()}</td>
-                  <td>{escrow.role === "buyer" ? "Buyer" : "Seller"}</td>
-                  <td>
-                    {escrow.role === "seller" && (
-                      <button
-                        className="bg-green-500 text-white px-2 py-1 rounded"
-                        onClick={() => handleMarkAsDelivered(escrow.id)}
-                      >
-                        Mark as Delivered
-                      </button>
-                    )}
+                <tr
+                  key={escrow.id.toString()}
+                  className={`${escrow.role === "buyer" ? "bg-blue-900" : "bg-green-900"} hover:bg-gray-700 text-white`}
+                >
+                  <td className="border border-gray-600 px-4 py-2">{escrow.id.toString()}</td>
+                  <td className="border border-gray-600 px-4 py-2">{escrow.role === "buyer" ? "Buyer" : "Seller"}</td>
+                  <td className="border border-gray-600 px-4 py-2">{escrow.currentState || "Unknown"}</td>
+                  <td className="border border-gray-600 px-4 py-2">
+                    <div className="flex flex-wrap gap-2">
+                      {/* Buyer: Confirmar */}
+                      {escrow.role === "buyer" && (
+                        <button
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleConfirm(escrow.id)}
+                        >
+                          Confirmar
+                        </button>
+                      )}
+
+                      {/* Buyer: Iniciar disputa */}
+                      {escrow.role === "buyer" && (
+                        <button
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleInitiateDispute(escrow.id)}
+                        >
+                          Disputa
+                        </button>
+                      )}
+
+                      {/* Seller: Marcar como Enviado */}
+                      {escrow.role === "seller" && (
+                        <button
+                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleMarkAsDelivered(escrow.id)}
+                        >
+                          Enviado
+                        </button>
+                      )}
+
+                      {/* Seller: Confirmar */}
+                      {escrow.role === "seller" && (
+                        <button
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleConfirm(escrow.id)}
+                        >
+                          Confirmar
+                        </button>
+                      )}
+
+                      {/* Seller: Iniciar disputa */}
+                      {escrow.role === "seller" && (
+                        <button
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-all duration-200"
+                          onClick={() => handleInitiateDispute(escrow.id)}
+                        >
+                          Disputa
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p>No escrows found.</p>
+          <p className="text-white">No escrows found.</p>
         )}
       </div>
     </div>
