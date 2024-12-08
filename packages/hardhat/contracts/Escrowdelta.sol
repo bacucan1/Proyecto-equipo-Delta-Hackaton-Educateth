@@ -24,6 +24,9 @@ contract Escrowdelta {
     }
 
     mapping(uint256 => Escrow) public escrows; // Almacena los pedidos por ID
+    mapping(address => uint256[]) public escrowsByPayer;
+    mapping(address => uint256[]) public escrowsByPayee; 
+
 
     uint256 public escrowCount; // Contador para IDs únicos
     address public globalArbiter; // Árbitro global temporal
@@ -80,6 +83,9 @@ contract Escrowdelta {
             currentState: State.AWAITING_DELIVERY,
             inDispute: false
         });
+
+        escrowsByPayer[msg.sender].push(escrowCount);
+        escrowsByPayee[_payee].push(escrowCount);
 
         emit EscrowCreated(escrowCount, msg.sender, _payee, msg.value, _deadline);
         return escrowCount;
@@ -187,5 +193,9 @@ contract Escrowdelta {
     revert("Actualmente no puede ejecutar esta operacion, verifique el estatus de su pedido");
     }
 
+    //Obtener los scrow segun el address
+    function getEscrowsByAddress(address user) external view returns (uint256[] memory payerEscrows, uint256[] memory payeeEscrows) {
+    return (escrowsByPayer[user], escrowsByPayee[user]);
+}
 }
 
