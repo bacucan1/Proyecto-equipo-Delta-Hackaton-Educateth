@@ -1,201 +1,160 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import React, { useState } from "react";
+import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
-const escrowABI = [
-  "function createAndDeposit(address _payee, uint256 _deadline) external payable returns (uint256)",
-  "function markAsDelivered(uint256 escrowId) external",
-  "function initiateDispute(uint256 escrowId) external",
-];
+const EscrowPage: React.FC = () => {
+  const [payee, setPayee] = useState("0x172104Dec113769a5E9a6E00A99e037a42B2778C");
+  const [amount, setAmount] = useState(40); // USD
+  const [deadline, setDeadline] = useState(
+    BigInt(Math.floor(Date.now() / 1000) + 10 * 24 * 60 * 60), // 10 días
+  );
+  const [userMessage, setUserMessage] = useState<string | null>(null);
+  const ethPriceInUSD = 4200; // Precio fijo de ETH en USD
+  const amountETH = (amount / ethPriceInUSD).toFixed(6); // Conversión de USD a ETH
 
-const contractAddress = "0xYourContractAddressHere";
-
-const Escrow: React.FC = () => {
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [payee] = useState<string>("0x172104Dec113769a5E9a6E00A99e037a42B2778C");
-  const [amount] = useState<string>("0.022");
-  const [deadline] = useState<string>((Math.floor(Date.now() / 1000) + 10 * 24 * 60 * 60).toString());
-  const [escrowId, setEscrowId] = useState<string>("");
-  const [showActions, setShowActions] = useState<boolean>(false);
-  const [productInfo] = useState({
-    description: "Auriculares inalámbricos con cancelación de ruido, hasta 20 horas de batería y carga rápida.",
-    seller: "AudioTech",
-    rating: "4.7/5",
+  // Leer el contador de escrows creados
+  const { data: escrowCount } = useScaffoldReadContract({
+    contractName: "Escrowdelta",
+    functionName: "escrowCount",
   });
 
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        setWalletAddress(accounts[0]);
-        setIsWalletConnected(true);
-      } catch (error) {
-        console.error("Error connecting wallet:", error);
-      }
-    } else {
-      alert("Please install MetaMask to use this feature.");
-    }
-  };
+  // Hook para crear y depositar un escrow
+  const { writeContractAsync: createAndDeposit, isPending: isCreating } = useScaffoldWriteContract("Escrowdelta");
 
-  const createAndDeposit = async () => {
+  const handleCreateEscrow = async () => {
+    setUserMessage(null);
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, escrowABI, signer);
-
-      const tx = await contract.createAndDeposit(payee, deadline, {
-        value: ethers.utils.parseEther(amount),
+      await createAndDeposit({
+        functionName: "createAndDeposit",
+        args: [payee, BigInt(deadline)],
+        value: BigInt(Math.floor(parseFloat(amountETH) * 10 ** 18)), // Cambio aquí
       });
-      const receipt = await tx.wait();
 
-      alert("Escrow created successfully!");
-      setEscrowId(receipt.logs[0]?.data || "");
-      setShowActions(true);
+      setUserMessage("✅ Escrow created successfully!");
     } catch (error) {
-      console.error("Error creating escrow:", error);
+      setUserMessage(`❌ Error creating escrow: ${(error as Error).message}`);
     }
   };
 
-  const markAsDelivered = async () => {
-    if (!escrowId) {
-      alert("Please provide the escrow ID.");
-      return;
-    }
+  // Hook para marcar como entregado
+  const { writeContractAsync: markAsDelivered } = useScaffoldWriteContract("Escrowdelta");
 
+  const handleMarkAsDelivered = async (escrowId: bigint) => {
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, escrowABI, signer);
-
-      const tx = await contract.markAsDelivered(escrowId);
-      await tx.wait();
-
-      alert("Marked as delivered successfully!");
-    } catch (error) {
-      console.error("Error marking as delivered:", error);
-    }
-  };
-
-  const initiateDispute = async () => {
-    if (!escrowId) {
-      alert("Please provide the escrow ID.");
-      return;
-    }
-
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, escrowABI, signer);
-
-      const tx = await contract.initiateDispute(escrowId);
-      await tx.wait();
-
-      alert("Dispute initiated successfully!");
-    } catch (error) {
-      console.error("Error initiating dispute:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.request({ method: "eth_accounts" }).then((accounts: string[]) => {
-        if (accounts.length > 0) {
-          setWalletAddress(accounts[0]);
-          setIsWalletConnected(true);
-        }
+      await markAsDelivered({
+        functionName: "markAsDelivered",
+        args: [escrowId],
       });
+      setUserMessage(`✅ Escrow #${escrowId} marked as delivered successfully!`);
+    } catch (error) {
+      setUserMessage(`❌ Error marking escrow #${escrowId} as delivered: ${(error as Error).message}`);
     }
-  }, []);
+  };
+
+  // Hook para iniciar una disputa
+  const { writeContractAsync: initiateDispute } = useScaffoldWriteContract("Escrowdelta");
+
+  const handleInitiateDispute = async (escrowId: bigint) => {
+    try {
+      await initiateDispute({
+        functionName: "initiateDispute",
+        args: [escrowId],
+      });
+      setUserMessage(`✅ Dispute initiated for Escrow #${escrowId} successfully!`);
+    } catch (error) {
+      setUserMessage(`❌ Error initiating dispute for Escrow #${escrowId}: ${(error as Error).message}`);
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-gray-100 to-gray-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-xl w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mt-10">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 text-center">Escrow Assistant</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-          Secure your transactions with our escrow system.
-        </p>
-
-        {/* Información del Producto */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Product Information</h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            <strong>Description:</strong> {productInfo.description}
-          </p>
-          <p className="text-gray-600 dark:text-gray-400">
-            <strong>Seller:</strong> {productInfo.seller}
-          </p>
-          <p className="text-gray-600 dark:text-gray-400">
-            <strong>Rating:</strong> {productInfo.rating}
-          </p>
+    <div className="container mx-auto py-8 space-y-8">
+      {/* Formulario para crear escrow */}
+      <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4">Create Escrow</h2>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Payee Address</label>
+          <input
+            type="text"
+            className="w-full p-2 border border-gray-300 rounded-lg"
+            value={payee}
+            onChange={e => setPayee(e.target.value)}
+          />
         </div>
-
-        {/* Conexión de la Wallet */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Wallet Connection</h2>
-          {isWalletConnected ? (
-            <p className="text-green-600 dark:text-green-400">Wallet connected: {walletAddress}</p>
-          ) : (
-            <button
-              onClick={connectWallet}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
-            >
-              Connect Wallet
-            </button>
-          )}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Amount (in USD)</label>
+          <input
+            type="number"
+            className="w-full p-2 border border-gray-300 rounded-lg"
+            value={amount}
+            onChange={e => setAmount(Number(e.target.value))}
+          />
+          <p className="text-sm text-gray-400">Equivalent in ETH: {amountETH} ETH</p>
         </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Deadline (Unix Timestamp)</label>
+          <input
+            type="number"
+            className="w-full p-2 border border-gray-300 rounded-lg"
+            value={String(deadline)}
+            onChange={e => setDeadline(BigInt(e.target.value))}
+          />
+        </div>
+        <button
+          onClick={handleCreateEscrow}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          disabled={isCreating}
+        >
+          {isCreating ? "Processing..." : "Create & Deposit"}
+        </button>
+        {userMessage && <p className="text-sm mt-2">{userMessage}</p>}
+      </div>
 
-        {/* Detalles del Escrow */}
-        {isWalletConnected && (
-          <>
-            <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Escrow Details</h2>
-            <input
-              type="text"
-              value={payee}
-              readOnly
-              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 mb-2 p-2 rounded-lg"
-            />
-            <input
-              type="text"
-              value={amount}
-              readOnly
-              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 mb-2 p-2 rounded-lg"
-            />
-            <input
-              type="text"
-              value={deadline}
-              readOnly
-              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 mb-4 p-2 rounded-lg"
-            />
-            {!showActions ? (
-              <button
-                onClick={createAndDeposit}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
-              >
-                Create & Deposit
-              </button>
-            ) : (
-              <div className="flex flex-col gap-4">
-                <button
-                  onClick={markAsDelivered}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg"
-                >
-                  Mark Delivered
-                </button>
-                <button
-                  onClick={initiateDispute}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg"
-                >
-                  Initiate Dispute
-                </button>
-              </div>
-            )}
-          </>
+      {/* Listado de Escrows */}
+      <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4">Your Escrows</h2>
+        {escrowCount ? (
+          <table className="w-full table-auto">
+            <thead>
+              <tr>
+                <th className="text-left p-2">ID</th>
+                <th className="text-left p-2">Amount</th>
+                <th className="text-left p-2">Payee</th>
+                <th className="text-left p-2">Deadline</th>
+                <th className="text-left p-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: Number(escrowCount) }, (_, idx) => (
+                <tr key={idx}>
+                  <td className="p-2">{idx + 1}</td>
+                  <td className="p-2">Dynamic Amount Here</td>
+                  <td className="p-2">Dynamic Payee Here</td>
+                  <td className="p-2">Dynamic Deadline Here</td>
+                  <td className="p-2 flex space-x-2">
+                    <button
+                      onClick={() => handleMarkAsDelivered(BigInt(idx + 1))}
+                      className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
+                    >
+                      Delivered
+                    </button>
+                    <button
+                      onClick={() => handleInitiateDispute(BigInt(idx + 1))}
+                      className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                    >
+                      Dispute
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No escrows found.</p>
         )}
       </div>
     </div>
   );
 };
 
-export default Escrow;
+export default EscrowPage;
