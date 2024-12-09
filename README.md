@@ -95,7 +95,12 @@ Este enfoque no solo mejora la experiencia del cliente, sino que también promue
    ```
    http://localhost:3000
    ```
+   ó interactua con nuestra demo:
 
+   ```
+   https://smartassist-bacucan1-bacucans-projects.vercel.app/?_vercel_share=Bc9SjmDg5oBv0CnvrR7tjqz3W6b7jSta
+   ```
+   
 ---
 
 ## 💻 Tecnologías Utilizadas
