@@ -3,7 +3,10 @@
 
 
 **SmartAssist** es una innovadora plataforma web diseñada para resolver problemáticas clave en la atención al cliente y los pagos en redes sociales. Integra tecnologías avanzadas como la **Inteligencia Artificial (IA)** y **Blockchain** utilizando la solución Layer 2 de Arbitrum, ofreciendo una experiencia confiable y eficiente tanto para compradores como vendedores.
-
+---
+Pruebalo aqui: https://smartassist-bacucan1-bacucans-projects.vercel.app/?_vercel_share=Bc9SjmDg5oBv0CnvrR7tjqz3W6b7jSta
+---
+Revisa el contrato en arbiscan: https://sepolia.arbiscan.io/address/0x4568da48b8642dab4addf8585f6b984817c5bbab
 ---
 
 ## 🚀 Información del Proyecto
