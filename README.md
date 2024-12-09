@@ -1,80 +1,119 @@
-# 🏗 Scaffold-ETH 2
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
-
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
-
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
-
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
-
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
-
-## Requirements
-
-Before you begin, you need to install the following tools:
-
-- [Node (>= v18.18)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-## Quickstart
-
-To get started with Scaffold-ETH 2, follow the steps below:
-
-1. Install dependencies if it was skipped in CLI:
-
-```
-cd my-dapp-example
-yarn install
-```
-
-2. Run a local network in the first terminal:
-
-```
-yarn chain
-```
-
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/hardhat/hardhat.config.ts`.
-
-3. On a second terminal, deploy the test contract:
-
-```
-yarn deploy
-```
-
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
-yarn start
-```
-
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
-
-Run smart contract test with `yarn hardhat:test`
-
-- Edit your smart contracts in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
+![pixelcut-export](https://github.com/user-attachments/assets/2779f849-0bf6-4f87-b303-e7e32db95af2)
 
 
-## Documentation
+**SmartAssist** es una innovadora plataforma web diseñada para resolver problemáticas clave en la atención al cliente y los pagos en redes sociales. Integra tecnologías avanzadas como la **Inteligencia Artificial (IA)** y **Blockchain** utilizando la solución Layer 2 de Arbitrum, ofreciendo una experiencia confiable y eficiente tanto para compradores como vendedores.
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+---
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+## 🚀 Información del Proyecto
 
-## Contributing to Scaffold-ETH 2
+### 📌 Problema
 
-We welcome contributions to Scaffold-ETH 2!
+#### Atención al Cliente:
+- Respuestas tardías y de baja calidad en redes sociales como Instagram, Facebook y TikTok.
+- Insatisfacción de los clientes debido a la falta de personalización y claridad en las respuestas.
 
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+#### Pagos Centralizados:
+- Desconfianza en los pagos online por la falta de transparencia y el control centralizado.
+- Dificultades para garantizar que tanto compradores como vendedores queden satisfechos tras la transacción.
+
+---
+
+### 💡 Solución Propuesta
+
+Nuestra plataforma combina dos enfoques innovadores:
+
+1. **Optimización de la Atención al Cliente con IA:**
+   - Respuestas eficientes, personalizadas y disponibles 24/7.
+   - Mejora de la experiencia del cliente en redes sociales.
+
+2. **Pagos Descentralizados con Blockchain y Arbitrum:**
+   - Los pagos son controlados directamente por ambas partes sin intermediarios.
+   - Uso de contratos inteligentes para gestionar:
+     - Desembolso del pago.
+     - Devolución del pago.
+     - Resolución de disputas con extensiones de tiempo según sea necesario.
+
+![image](https://github.com/user-attachments/assets/b5559312-1a76-409c-9b0e-bd1387e90b06)
+
+---
+
+### 🔧 Reto Tecnológico
+
+La combinación de **Inteligencia Artificial** y **Blockchain** ha sido un desafío significativo. Sin embargo, hemos logrado abordar dos problemáticas complejas:
+- Mejorar la atención al cliente en redes sociales mediante IA.
+- Reducir la desconfianza en los pagos en línea utilizando Blockchain.
+
+Este enfoque no solo mejora la experiencia del cliente, sino que también promueve un ecosistema más confiable y eficiente para las transacciones digitales en redes sociales.
+
+![image](https://github.com/user-attachments/assets/887cd49c-c9c2-41e5-999c-9a0273ade545)  
+
+---
+
+## ⚙️ Instalación y Configuración
+
+### Requisitos Previos
+
+- **Node.js** (versión LTS recomendada)
+- **Yarn** (gestor de paquetes)
+- **Git** (para clonar el repositorio)
+- **VS Code** (o tu editor preferido)
+
+### Paso a Paso
+
+1. **Clona el repositorio**  
+   Abre la terminal en VS Code y ejecuta:
+   ```bash
+   git clone https://github.com/bacucan1/Proyecto-equipo-Delta-Hackaton-Educateth.git
+   ```
+
+2. **Abre el proyecto en VS Code**  
+   Navega al directorio del proyecto:
+   ```bash
+   cd Proyecto-equipo-Delta-Hackaton-Educateth
+   ```
+   Luego, abre el proyecto en VS Code:
+   ```bash
+   code .
+   ```
+
+3. **Instala las dependencias**  
+   En la terminal integrada de VS Code, ejecuta:
+   ```bash
+   yarn install
+   ```
+
+4. **Inicia la aplicación**  
+   Ejecuta el siguiente comando para iniciar el servidor de desarrollo:
+   ```bash
+   yarn start
+   ```
+
+5. **Accede a la aplicación**  
+   Abre tu navegador y visita la URL que aparece en la terminal, generalmente:
+   ```
+   http://localhost:3000
+   ```
+
+---
+
+## 💻 Tecnologías Utilizadas
+
+- **Frontend:** React.js
+- **Backend:** Node.js
+- **Blockchain:** Arbitrum (Layer 2)
+- **IA:** Modelos personalizados de procesamiento de lenguaje natural (NLP)
+- **Gestión de paquetes:** Yarn
+
+---
+
+## 🤝 Contribuciones
+
+¡Las contribuciones son bienvenidas! Si tienes ideas o mejoras, no dudes en abrir un issue o enviar un pull request.
+
+---
+
+## 📜 Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
