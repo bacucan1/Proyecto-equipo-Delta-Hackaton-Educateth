@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import ReactMarkdown from "react-markdown";
+import Markdown from "markdown-to-jsx";
 
 interface LLMResponse {
   choices: { message: { role: string; content: string } }[];
@@ -33,9 +32,10 @@ const Chat: React.FC = () => {
 
     setIsWaiting(true);
     try {
-      const response = await axios.post<LLMResponse>(
-        "https://29fc-186-86-110-141.ngrok-free.app/v1/chat/completions",
-        {
+      const response = await fetch("https://29fc-186-86-110-141.ngrok-free.app/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           model: "nombre_del_modelo",
           messages: [
             ...chatHistory.map(chat => ({
@@ -44,11 +44,15 @@ const Chat: React.FC = () => {
             })),
             { role: "user", content: message },
           ],
-        },
-        { headers: { "Content-Type": "application/json" } },
-      );
+        }),
+      });
 
-      const llmResponse = response.data.choices[0]?.message?.content || "No response from LLM";
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: LLMResponse = await response.json();
+      const llmResponse = data.choices[0]?.message?.content || "No response from LLM";
 
       setChatHistory(prevHistory => [
         ...prevHistory,
@@ -97,7 +101,7 @@ const Chat: React.FC = () => {
                   : "bg-gray-300 dark:bg-gray-700 text-black dark:text-white"
               }`}
             >
-              <strong>{chat.user}:</strong> <ReactMarkdown>{chat.text}</ReactMarkdown>
+              <strong>{chat.user}:</strong> <Markdown>{chat.text}</Markdown>
             </div>
           </div>
         ))}
