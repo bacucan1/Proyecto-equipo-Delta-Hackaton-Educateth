@@ -34,7 +34,7 @@ const Chat: React.FC = () => {
     setIsWaiting(true);
     try {
       const response = await axios.post<LLMResponse>(
-        "https://6092-186-86-110-141.ngrok-free.app/v1/chat/completions",
+        "https://29fc-186-86-110-141.ngrok-free.app/v1/chat/completions",
         {
           model: "nombre_del_modelo",
           messages: [
