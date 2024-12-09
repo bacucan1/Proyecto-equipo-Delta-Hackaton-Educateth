@@ -84,20 +84,13 @@ Este enfoque no solo mejora la experiencia del cliente, sino que también promue
    yarn install
    ```
 
-4. **Configura las variables de entorno**  
-   Si existe un archivo `.env.example`, cópialo y renómbralo como `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-   Completa los valores necesarios en el archivo `.env`.
-
-5. **Inicia la aplicación**  
+4. **Inicia la aplicación**  
    Ejecuta el siguiente comando para iniciar el servidor de desarrollo:
    ```bash
    yarn start
    ```
 
-6. **Accede a la aplicación**  
+5. **Accede a la aplicación**  
    Abre tu navegador y visita la URL que aparece en la terminal, generalmente:
    ```
    http://localhost:3000
