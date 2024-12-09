@@ -32,7 +32,7 @@ const Chat: React.FC = () => {
 
     setIsWaiting(true);
     try {
-      const response = await fetch("https://29fc-186-86-110-141.ngrok-free.app/v1/chat/completions", {
+      const response = await fetch("https://2185-186-86-110-141.ngrok-free.app/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
